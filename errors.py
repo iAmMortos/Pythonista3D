@@ -7,3 +7,8 @@ class MatrixIndexOutOfBoundsError(Exception):
 class MatrixSizeMismatchError(Exception):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
+
+
+class MatrixHasNoInverseError(Exception):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)

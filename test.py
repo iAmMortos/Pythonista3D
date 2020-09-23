@@ -2,11 +2,10 @@
 from libs.matrix import Matrix
 
 def main():
-  m = Matrix(3,4,[1,2,3,4,5,6,7,8,9,10,11,12])
-  m2 = Matrix(3,4,[5,5,5,5,5,5,5,5,5,5,5,5])
-  m3 = m + m2
-  print(m3.get_row(3))
+  m1 = Matrix(1, 3, [1, 2, 3])
+  m2 = Matrix(3, 1, [4, 5, 6])
+  print(m1 * m2)
+  print(m2 * m1)
 
 if __name__ == '__main__':
   main()
-
