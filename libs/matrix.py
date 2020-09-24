@@ -184,7 +184,7 @@ class Matrix (object):
   def get_sub_matrix(self, rowidx, colidx):
     """
     Returns the resulting matrix when the row and column at the given indices are removed. Useful for determining
-    the inverse and determinant.j
+    the inverse and determinant.
     :param rowidx: the index of the row to remove
     :param colidx: the index of the column to remove
     :raises MatrixIndexOutOfBoundsError: if the given indices fall outside the matrix's bounds
@@ -219,7 +219,7 @@ class Matrix (object):
     elif self._nrows == 2:
       a, b, c, d = self._data
       return a * d - b * c
-    # if larger than 2x2, recursively perform the determinants on the submatrices
+    # if larger than 2x2, recursively perform the determinants on the submatrices and add them together with altwenating signs.
     else:
       mult = 1
       total = 0
