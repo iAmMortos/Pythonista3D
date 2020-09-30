@@ -1,0 +1,3 @@
+
+class Mesh(object):
+  pass

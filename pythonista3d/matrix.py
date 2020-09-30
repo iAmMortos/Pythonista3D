@@ -1,5 +1,6 @@
 
-from errors import MatrixSizeMismatchError, MatrixIndexOutOfBoundsError, MatrixHasNoInverseError
+from pythonista3d.errors import MatrixSizeMismatchError, MatrixIndexOutOfBoundsError, MatrixHasNoInverseError
+from numbers import Number
 
 
 class Matrix (object):
@@ -40,7 +41,7 @@ class Matrix (object):
     d = self.get_determinant()
     if d == 0:
       raise MatrixHasNoInverseError()
-    return new_mtx * (1 / d)
+    return new_mtx.scale(1 / d)
 
   def add(self, mtx):
     """
@@ -219,7 +220,7 @@ class Matrix (object):
     elif self._nrows == 2:
       a, b, c, d = self._data
       return a * d - b * c
-    # if larger than 2x2, recursively perform the determinants on the submatrices and add them together with altwenating signs.
+    # if larger than 2x2, recursively perform the determinants on the submatrices and add them together with alternating signs.
     else:
       mult = 1
       total = 0
@@ -244,37 +245,37 @@ class Matrix (object):
     return self._nrows, self._ncols
 
   def __add__(self, mtx):
-    if type(mtx) is Matrix:
+    if isinstance(mtx, Matrix):
       return self.add(mtx)
-    elif type(mtx) in [int, float]:
+    elif isinstance(mtx, Number):
       return self.add_const(mtx)
     else:
       raise TypeError("Cannot add type [%s] to a matrix." % type(mtx))
     
   def __sub__(self, mtx):
-    if type(mtx) is Matrix:
+    if isinstance(mtx, Matrix):
       return self.subtract(mtx)
-    elif type(mtx) in [int, float]:
+    elif isinstance(mtx, Number):
       return self.add_const(-1 * mtx)
     else:
       raise TypeError("Cannot subtract type [%s] from a matrix." % type(mtx))
 
   def __mul__(self, mtx):
-    if type(mtx) is Matrix:
+    if isinstance(mtx, Matrix):
       return self.dot(mtx)
-    elif type(mtx) in [int, float]:
+    elif isinstance(mtx, Number):
       return self.scale(mtx)
     else:
       raise TypeError("Cannot multiply type [%s] with a matrix." % type(mtx))
 
   def __floordiv__(self, const):
-    if type(const) in [int, float]:
+    if isinstance(const, Number):
       return self.int_divide(const)
     else:
       raise TypeError("Cannot int divide a matrix by type [%s]." % type(const))
 
   def __truediv__(self, const):
-    if type(const) in [int, float]:
+    if isinstance(const, Number):
       return self.divide(const)
     else:
       raise TypeError("Cannot divide a matrix by type [%s]." % type(const))

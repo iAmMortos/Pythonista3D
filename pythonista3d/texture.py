@@ -1,0 +1,3 @@
+
+class Texture(object):
+  pass

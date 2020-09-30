@@ -1,5 +1,5 @@
 
-from libs.matrix import Matrix
+from pythonista3d.matrix import Matrix
 
 def main():
   m1 = Matrix(1, 3, [1, 2, 3])
