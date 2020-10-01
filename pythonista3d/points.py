@@ -4,6 +4,11 @@ from numbers import Number
 
 class Point(object):
   def __init__(self, ndims, *vals):
+    """
+    Represents a point in n-dimension
+    :param ndims: the number of dimensions
+    :param vals: the n values for this point (must match ndims)
+    """
     self._num_dimensions = ndims
     self._vals = vals[::]
     if len(vals) != ndims:
@@ -30,11 +35,20 @@ class Point(object):
 
   @property
   def num_dimensions(self):
+    """
+    Getter.
+    :return: the number of dimensions at this point.
+    """
     return self._num_dimensions
 
 
 class Point2D(Point):
   def __init__(self, x=0, y=0):
+    """
+    Represents a 2-dimensional coordinate point. Default values for x and y are 0 if not explicitly set.
+    :param x:
+    :param y:
+    """
     super().__init__(2, x, y)
 
   @property
@@ -56,6 +70,12 @@ class Point2D(Point):
 
 class Point3D(Point):
   def __init__(self, x=0, y=0, z=0):
+    """
+    Represents a 3-dimensional coordinate point. Default values for x, y, and z are 0 if not explicitly set.
+    :param x:
+    :param y:
+    :param z:
+    """
     super().__init__(3, x, y, z)
 
   @property
