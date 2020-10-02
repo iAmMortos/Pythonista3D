@@ -1,11 +1,13 @@
+from __future__ import annotations
 
 from pythonista3d.errors import MatrixSizeMismatchError, MatrixIndexOutOfBoundsError, MatrixHasNoInverseError
 from numbers import Number
+from typing import List, Union, Tuple
 
 
 class Matrix (object):
 
-  def __init__(self, nrows, ncols, data=None, init_val=0):
+  def __init__(self, nrows: int, ncols: int, data: List[Number] = None, init_val: int = 0):
     """
     A 2D matrix class.
     :param nrows: The height of the matrix (number of rows)
@@ -20,7 +22,7 @@ class Matrix (object):
     if data is not None:
       self.set_all(data)
 
-  def inverse(self):
+  def inverse(self) -> Matrix:
     """
     Get the inverse of the matrix if it exists, otherwise raise a MatrixHasNoInverseError
 
@@ -43,7 +45,7 @@ class Matrix (object):
       raise MatrixHasNoInverseError()
     return new_mtx.scale(1 / d)
 
-  def add(self, mtx):
+  def add(self, mtx: Matrix) -> Matrix:
     """
     :param mtx: the matrix to add to this one
     :raises MatrixSizeMismatchError: if the provided matrix doesn't match the size of this one
@@ -53,7 +55,7 @@ class Matrix (object):
       raise MatrixSizeMismatchError("Matrices must be the same dimensions to add. [%s] and [%s] provided." % self.dimensions, mtx.dimensions)
     return Matrix(self._nrows, self._ncols, list(map(lambda a: a[0] + a[1], list(zip(self._data, mtx._data)))))
 
-  def subtract(self, mtx):
+  def subtract(self, mtx: Matrix) -> Matrix:
     """
     :param mtx: the matrix to subtract from this one
     :raises MatrixSizeMismatchError: if the provided matrix doesn't match the size of this one
@@ -63,14 +65,14 @@ class Matrix (object):
       raise MatrixSizeMismatchError("Matrices must be the same dimensions to subtract. [%s] and [%s] provided." % self.dimensions, mtx.dimensions)
     return Matrix(self._nrows, self._ncols, list(map(lambda a: a[0] - a[1], list(zip(self._data, mtx._data)))))
     
-  def add_const(self, const):
+  def add_const(self, const: Number) -> Matrix:
     """
     :param const: a value to add to each number in the matrix
     :return: a new matrix with the constant added to each numberj
     """
     return Matrix(self._nrows, self._ncols, [d + const for d in self._data])
 
-  def divide(self, const):
+  def divide(self, const: Number) -> Matrix:
     """
     :param const: a value to divide each number by in the matrix
     :raises ZeroDivisionError: if the number provided is 0
@@ -80,7 +82,7 @@ class Matrix (object):
       raise ZeroDivisionError("The constant provided cannot be 0.")
     return Matrix(self._nrows, self._ncols, [d / const for d in self._data])
 
-  def int_divide(self, const):
+  def int_divide(self, const: Number) -> Matrix:
     """
     :param const: a value to integer divide each number by in the matrix
     :raises ZeroDivisionError: if the number provided is 0
@@ -90,20 +92,20 @@ class Matrix (object):
       raise ZeroDivisionError("The integer provided cannot be 0.")
     return Matrix(self._nrows, self._ncols, [d // const for d in self._data])
 
-  def scale(self, scalar):
+  def scale(self, scalar: Number) -> Matrix:
     """
     :param scalar: The value by which each number in the matrix will be multiplied
     :return: a new matrix with each number multiplied by the provided scalar
     """
     return Matrix(self._nrows, self._ncols, [d * scalar for d in self._data])
 
-  def negative(self):
+  def negative(self) -> Matrix:
     """
     :return: a new matrix with each number's sign flipped
     """
     return self.scale(-1)
 
-  def dot(self, mtx):
+  def dot(self, mtx: Matrix) -> Matrix:
     """
     :param mtx: The matrix to dot with this one.
     :raises MatrixSizeMismatchError: if the provided matrix's number of rows doesn't match this matrix's number of columns
@@ -119,7 +121,7 @@ class Matrix (object):
         new_mtx.set(row, col, sum(list(map(lambda a: a[0]*a[1], list(zip(r, c))))))
     return new_mtx
 
-  def transpose(self):
+  def transpose(self) -> Matrix:
     """
     :return: a new matrix that's been flipped along it's diagonal axis
     """
@@ -129,7 +131,7 @@ class Matrix (object):
         new_mtx.set(col, row, self.get(row, col))
     return new_mtx
 
-  def get_row(self, idx):
+  def get_row(self, idx: int) -> List[Number]:
     """
     :param idx: the index of the row to retrieve from the matrix
     :raises MatrixIndexOutOfBoundsError: if the given index is out of bounds.
@@ -139,7 +141,7 @@ class Matrix (object):
       raise MatrixIndexOutOfBoundsError("Given row index [%s] is out of bounds for the number of rows [%s]." % (idx, self._nrows))
     return self._data[idx * self._ncols: idx * self._ncols + self._ncols]
 
-  def get_col(self, idx):
+  def get_col(self, idx: int) -> List[Number]:
     """
     :param idx: the index of the column to retrieve from the matrix
     :raises MatrixIndexOutOfBoundsError: if the given index is out of bounds.
@@ -149,7 +151,7 @@ class Matrix (object):
       raise MatrixIndexOutOfBoundsError("Given column index [%s] is out of bounds for the number of columns [%s]." % (idx, self._ncols))
     return self._data[idx::self._ncols]
 
-  def get(self, rowidx, colidx):
+  def get(self, rowidx: int, colidx: int) -> Number:
     """
     :param rowidx: the index of the row
     :param colidx: the index of the column
@@ -160,7 +162,7 @@ class Matrix (object):
       raise MatrixIndexOutOfBoundsError("Given matrix coordinate [(%s, %s)] is out of bounds of the matrix of dimension [%s]." % (rowidx, colidx, self.dimensions))
     return self._data[rowidx * self._ncols + colidx]
 
-  def set(self, rowidx, colidx, value):
+  def set(self, rowidx: int, colidx: int, value: Number):
     """
     Set the value at the given row and column index to the value provided
     :param rowidx: the index of the row to edit
@@ -172,7 +174,7 @@ class Matrix (object):
       raise MatrixIndexOutOfBoundsError("Given matrix coordinate [(%s, %s)] is out of bounds of the matrix of dimension [%s]." % (rowidx, colidx, self.dimensions))
     self._data[rowidx * self._ncols + colidx] = value
     
-  def set_all(self, data):
+  def set_all(self, data: List[Number]):
     """
     Set all the number values for this matrix.
     :raises MatrixIndexOutOfBoundsError: if the length of the list of data doesn't match the size of the matrixj
@@ -182,7 +184,7 @@ class Matrix (object):
       raise MatrixSizeMismatchError('The size of the data [%s] does not match the dimensions of the matrix [%s = %s]' % (len(data), self.dimensions, self._nrows * self._ncols))
     self._data = data
 
-  def get_sub_matrix(self, rowidx, colidx):
+  def get_sub_matrix(self, rowidx: int, colidx: int) -> Matrix:
     """
     Returns the resulting matrix when the row and column at the given indices are removed. Useful for determining
     the inverse and determinant.
@@ -205,7 +207,7 @@ class Matrix (object):
     new_mtx._data = data
     return new_mtx
 
-  def get_determinant(self):
+  def get_determinant(self) -> Matrix:
     """
     :raises MatrixSizeMismatchError: if attempting to perform this operation on a non-square matrix
     :return: The value of the determinant of this matrix
@@ -230,15 +232,15 @@ class Matrix (object):
       return total
 
   @property
-  def num_rows(self):
+  def num_rows(self) -> int:
     return self._nrows
 
   @property
-  def num_cols(self):
+  def num_cols(self) -> int:
     return self._ncols
 
   @property
-  def dimensions(self):
+  def dimensions(self) -> Tuple[int, int]:
     """
     :return: A tuple containing the number of (rows, columns) in this matrix
     """
@@ -294,4 +296,8 @@ class Matrix (object):
 
 class IdentityMatrix(Matrix):
   def __init__(self, size):
+    """
+    Represents a SQUARE matrix of given size with 1's along the diagonal, and 0's everywhere else.
+    :param size: the size of this square matrix
+    """
     super().__init__(size, size, [1] + ([0] * size + [1]) * (size - 1))

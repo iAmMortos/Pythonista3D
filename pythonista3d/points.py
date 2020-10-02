@@ -3,7 +3,7 @@ from numbers import Number
 
 
 class Point(object):
-  def __init__(self, ndims, *vals):
+  def __init__(self, ndims: int, *vals: Number):
     """
     Represents a point in n-dimension
     :param ndims: the number of dimensions
@@ -34,7 +34,7 @@ class Point(object):
     self._vals[key] = value
 
   @property
-  def num_dimensions(self):
+  def num_dimensions(self) -> int:
     """
     Getter.
     :return: the number of dimensions at this point.
@@ -43,7 +43,7 @@ class Point(object):
 
 
 class Point2D(Point):
-  def __init__(self, x=0, y=0):
+  def __init__(self, x: int = 0, y: int = 0):
     """
     Represents a 2-dimensional coordinate point. Default values for x and y are 0 if not explicitly set.
     :param x:
@@ -52,24 +52,24 @@ class Point2D(Point):
     super().__init__(2, x, y)
 
   @property
-  def x(self):
+  def x(self) -> Number:
     return self[0]
 
   @x.setter
-  def x(self, val):
+  def x(self, val: Number):
     self[0] = val
 
   @property
-  def y(self):
+  def y(self) -> Number:
     return self[1]
 
   @y.setter
-  def y(self, val):
+  def y(self, val: Number):
     self[1] = val
 
 
 class Point3D(Point):
-  def __init__(self, x=0, y=0, z=0):
+  def __init__(self, x: int = 0, y: int = 0, z: int = 0):
     """
     Represents a 3-dimensional coordinate point. Default values for x, y, and z are 0 if not explicitly set.
     :param x:
@@ -79,25 +79,25 @@ class Point3D(Point):
     super().__init__(3, x, y, z)
 
   @property
-  def x(self):
+  def x(self) -> Number:
     return self[0]
 
   @x.setter
-  def x(self, val):
+  def x(self, val: Number):
     self[0] = val
 
   @property
-  def y(self):
+  def y(self) -> Number:
     return self[1]
 
   @y.setter
-  def y(self, val):
+  def y(self, val: Number):
     self[1] = val
 
   @property
-  def z(self):
+  def z(self) -> Number:
     return self[2]
 
   @z.setter
-  def z(self, val):
+  def z(self, val: Number):
     self[2] = val
