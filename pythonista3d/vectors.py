@@ -26,15 +26,15 @@ class Vector(Point):
   def scale(self, scalar: Number) -> Vector:
     pass
 
-  def normalize(self):
+  def normalize(self) -> Vector:
     pass
 
 
 class Vector2D(Vector):
-  def __init__(self, x=0, y=0):
+  def __init__(self, x: Number = 0, y: Number = 0):
     super().__init__(2, x, y)
 
 
 class Vector3D(Vector):
-  def __init__(self, x=0, y=0, z=0):
+  def __init__(self, x: Number = 0, y: Number = 0, z: Number = 0):
     super().__init__(3, x, y, z)
