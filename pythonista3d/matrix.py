@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from pythonista3d.errors import MatrixSizeMismatchError, MatrixIndexOutOfBoundsError, MatrixHasNoInverseError
 from numbers import Number
 from typing import List, Union, Tuple
@@ -22,7 +20,7 @@ class Matrix (object):
     if data is not None:
       self.set_all(data)
 
-  def inverse(self) -> Matrix:
+  def inverse(self) -> "Matrix":
     """
     Get the inverse of the matrix if it exists, otherwise raise a MatrixHasNoInverseError
 
@@ -45,7 +43,7 @@ class Matrix (object):
       raise MatrixHasNoInverseError()
     return new_mtx.scale(1 / d)
 
-  def add(self, mtx: Matrix) -> Matrix:
+  def add(self, mtx: "Matrix") -> "Matrix":
     """
     :param mtx: the matrix to add to this one
     :raises MatrixSizeMismatchError: if the provided matrix doesn't match the size of this one
@@ -55,7 +53,7 @@ class Matrix (object):
       raise MatrixSizeMismatchError("Matrices must be the same dimensions to add. [%s] and [%s] provided." % self.dimensions, mtx.dimensions)
     return Matrix(self._nrows, self._ncols, [z[0] + z[1] for z in zip(self._data, mtx._data)])
 
-  def subtract(self, mtx: Matrix) -> Matrix:
+  def subtract(self, mtx: "Matrix") -> "Matrix":
     """
     :param mtx: the matrix to subtract from this one
     :raises MatrixSizeMismatchError: if the provided matrix doesn't match the size of this one
@@ -65,14 +63,14 @@ class Matrix (object):
       raise MatrixSizeMismatchError("Matrices must be the same dimensions to subtract. [%s] and [%s] provided." % self.dimensions, mtx.dimensions)
     return Matrix(self._nrows, self._ncols, [z[0] - z[1] for z in zip(self._data, mtx._data)])
     
-  def add_const(self, const: Number) -> Matrix:
+  def add_const(self, const: Number) -> "Matrix":
     """
     :param const: a value to add to each number in the matrix
     :return: a new matrix with the constant added to each numberj
     """
     return Matrix(self._nrows, self._ncols, [d + const for d in self._data])
 
-  def divide(self, const: Number) -> Matrix:
+  def divide(self, const: Number) -> "Matrix":
     """
     :param const: a value to divide each number by in the matrix
     :raises ZeroDivisionError: if the number provided is 0
@@ -82,7 +80,7 @@ class Matrix (object):
       raise ZeroDivisionError("The constant provided cannot be 0.")
     return Matrix(self._nrows, self._ncols, [d / const for d in self._data])
 
-  def int_divide(self, const: Number) -> Matrix:
+  def int_divide(self, const: Number) -> "Matrix":
     """
     :param const: a value to integer divide each number by in the matrix
     :raises ZeroDivisionError: if the number provided is 0
@@ -92,20 +90,20 @@ class Matrix (object):
       raise ZeroDivisionError("The integer provided cannot be 0.")
     return Matrix(self._nrows, self._ncols, [d // const for d in self._data])
 
-  def scale(self, scalar: Number) -> Matrix:
+  def scale(self, scalar: Number) -> "Matrix":
     """
     :param scalar: The value by which each number in the matrix will be multiplied
     :return: a new matrix with each number multiplied by the provided scalar
     """
     return Matrix(self._nrows, self._ncols, [d * scalar for d in self._data])
 
-  def negative(self) -> Matrix:
+  def negative(self) -> "Matrix":
     """
     :return: a new matrix with each number's sign flipped
     """
     return self.scale(-1)
 
-  def dot(self, mtx: Matrix) -> Matrix:
+  def dot(self, mtx: "Matrix") -> "Matrix":
     """
     :param mtx: The matrix to dot with this one.
     :raises MatrixSizeMismatchError: if the provided matrix's number of rows doesn't match this matrix's number of columns
@@ -121,7 +119,7 @@ class Matrix (object):
         new_mtx.set(row, col, sum([z[0] * z[1] for z in zip(r, c)]))
     return new_mtx
 
-  def transpose(self) -> Matrix:
+  def transpose(self) -> "Matrix":
     """
     :return: a new matrix that's been flipped along it's diagonal axis
     """
@@ -184,7 +182,7 @@ class Matrix (object):
       raise MatrixSizeMismatchError('The size of the data [%s] does not match the dimensions of the matrix [%s = %s]' % (len(data), self.dimensions, self._nrows * self._ncols))
     self._data = data
 
-  def get_sub_matrix(self, rowidx: int, colidx: int) -> Matrix:
+  def get_sub_matrix(self, rowidx: int, colidx: int) -> "Matrix":
     """
     Returns the resulting matrix when the row and column at the given indices are removed. Useful for determining
     the inverse and determinant.
@@ -207,7 +205,7 @@ class Matrix (object):
     new_mtx._data = data
     return new_mtx
 
-  def get_determinant(self) -> Matrix:
+  def get_determinant(self) -> "Matrix":
     """
     :raises MatrixSizeMismatchError: if attempting to perform this operation on a non-square matrix
     :return: The value of the determinant of this matrix
@@ -246,7 +244,7 @@ class Matrix (object):
     """
     return self._nrows, self._ncols
 
-  def __add__(self, mtx: Union[Matrix, Number]) -> Matrix:
+  def __add__(self, mtx: Union["Matrix", Number]) -> "Matrix":
     if isinstance(mtx, Matrix):
       return self.add(mtx)
     elif isinstance(mtx, Number):
@@ -254,10 +252,10 @@ class Matrix (object):
     else:
       raise TypeError("Cannot add type [%s] to a matrix." % type(mtx))
 
-  def __radd__(self, other: Number) -> Matrix:
+  def __radd__(self, other: Number) -> "Matrix":
     return self.__add__(other)
     
-  def __sub__(self, mtx: Union[Matrix, Number]) -> Matrix:
+  def __sub__(self, mtx: Union["Matrix", Number]) -> "Matrix":
     if isinstance(mtx, Matrix):
       return self.subtract(mtx)
     elif isinstance(mtx, Number):
@@ -265,7 +263,7 @@ class Matrix (object):
     else:
       raise TypeError("Cannot subtract type [%s] from a matrix." % type(mtx))
 
-  def __mul__(self, mtx: Union[Matrix, Number]) -> Matrix:
+  def __mul__(self, mtx: Union["Matrix", Number]) -> "Matrix":
     if isinstance(mtx, Matrix):
       return self.dot(mtx)
     elif isinstance(mtx, Number):
@@ -273,22 +271,22 @@ class Matrix (object):
     else:
       raise TypeError("Cannot multiply type [%s] with a matrix." % type(mtx))
 
-  def __rmul__(self, other: Number) -> Matrix:
+  def __rmul__(self, other: Number) -> "Matrix":
     return self.__mul__(other)
 
-  def __floordiv__(self, const: Number) -> Matrix:
+  def __floordiv__(self, const: Number) -> "Matrix":
     if isinstance(const, Number):
       return self.int_divide(const)
     else:
       raise TypeError("Cannot int divide a matrix by type [%s]." % type(const))
 
-  def __truediv__(self, const: Number) -> Matrix:
+  def __truediv__(self, const: Number) -> "Matrix":
     if isinstance(const, Number):
       return self.divide(const)
     else:
       raise TypeError("Cannot divide a matrix by type [%s]." % type(const))
 
-  def __neg__(self) -> Matrix:
+  def __neg__(self) -> "Matrix":
     return self.negative()
     
   def __repr__(self):
