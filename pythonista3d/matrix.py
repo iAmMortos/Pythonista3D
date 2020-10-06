@@ -205,7 +205,7 @@ class Matrix (object):
     new_mtx._data = data
     return new_mtx
 
-  def get_determinant(self) -> "Matrix":
+  def get_determinant(self) -> Number:
     """
     :raises MatrixSizeMismatchError: if attempting to perform this operation on a non-square matrix
     :return: The value of the determinant of this matrix
