@@ -1,4 +1,5 @@
 
+from typing import List
 from numbers import Number
 
 
@@ -10,7 +11,7 @@ class Point(object):
     :param vals: the n values for this point (must match ndims)
     """
     self._num_dimensions = ndims
-    self._vals = vals[::]
+    self._vals = list(vals[::])
     if len(vals) != ndims:
       raise ValueError("The number of values provided must match the `ndims` provided.")
 
@@ -32,6 +33,15 @@ class Point(object):
     if not isinstance(value, Number):
       raise TypeError("The value provided must be a numerical value")
     self._vals[key] = value
+
+  def as_list(self) -> List[Number]:
+    """
+    :return: a copy of the values in the point as a list
+    """
+    return self._vals[::]
+
+  def __repr__(self):
+    return '({})'.format(', '.join([str(n) for n in self._vals]))
 
   @property
   def num_dimensions(self) -> int:
@@ -67,6 +77,9 @@ class Point2D(Point):
   def y(self, val: Number):
     self[1] = val
 
+  def __repr__(self):
+    return '(x: {}, y: {})'.format(self.x, self.y)
+
 
 class Point3D(Point):
   def __init__(self, x: int = 0, y: int = 0, z: int = 0):
@@ -101,3 +114,6 @@ class Point3D(Point):
   @z.setter
   def z(self, val: Number):
     self[2] = val
+
+  def __repr__(self):
+    return '(x: {}, y: {}, z: {})'.format(self.x, self.y, self.z)

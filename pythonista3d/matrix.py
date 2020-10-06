@@ -1,4 +1,5 @@
 from pythonista3d.errors import MatrixSizeMismatchError, MatrixIndexOutOfBoundsError, MatrixHasNoInverseError
+from pythonista3d.points import Point, Point2D, Point3D
 from numbers import Number
 from typing import List, Union, Tuple
 
@@ -244,6 +245,21 @@ class Matrix (object):
     """
     return self._nrows, self._ncols
 
+  def as_2d_list(self) -> List[List[Number]]:
+    """
+    :return: a copy of the values in the matrix as a 2-dimensional list
+    """
+    return [self._data[r*self.num_cols:r*self.num_cols + self.num_cols] for r in range(self.num_rows)]
+
+  def as_list(self) -> List[Number]:
+    """
+    :return: a copy of the values in the matrix flattened into a list
+    """
+    return self._data[::]
+
+  def clone(self) -> "Matrix":
+    return Matrix(self.num_rows, self.num_cols, self.as_list())
+
   def __add__(self, mtx: Union["Matrix", Number]) -> "Matrix":
     if isinstance(mtx, Matrix):
       return self.add(mtx)
@@ -297,11 +313,28 @@ class Matrix (object):
         s += ',\n '
     return s + ']'
 
+  @staticmethod
+  def from_point(pt: "Point") -> "Matrix":
+    """
+    Creates a single column matrix with the values of the point
+    :param pt: The point to convert to a matrix
+    :return: A new, single-column matrix containing the values
+    """
+    return Matrix(pt.num_dimensions, 1, pt.as_list())
 
-class IdentityMatrix(Matrix):
-  def __init__(self, size: int):
+  @staticmethod
+  def from_point_with_padding(pt: "Point", pad_size: int = 1, pad_value: Number = 1) -> "Matrix":
     """
-    Represents a SQUARE matrix of given size with 1's along the diagonal, and 0's everywhere else.
-    :param size: the size of this square matrix
+    Creates a single column matrix with the values of the point followed by a specified number of padding values
+    Default values of 1 and 1 for pad_size and pad_value are useful for creating a single-column matrix that can be
+    dotted with a matrix that also had padding
+    :param pt: The point to convert to a matrix
+    :param pad_size: The number of elements to add after point values (default 1)
+    :param pad_value: The value of the default values following the point values (default 1)
+    :return: A new, single-column matrix containing the point values and specified padding.
     """
-    super().__init__(size, size, [1] + ([0] * size + [1]) * (size - 1))
+    return Matrix(pt.num_dimensions + pad_size, 1, pt.as_list() + [pad_value] * pad_size)
+
+  @staticmethod
+  def identity_matrix(size: int) -> "Matrix":
+    return Matrix(size, size, [1] + ([0] * size + [1]) * (size - 1))
