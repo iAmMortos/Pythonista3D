@@ -27,6 +27,7 @@ def main():
          .rotate(math.pi / 2)\
          .reflect(ReflectionLine2D.origin)
   pt2 = Point2D(3, 1)
+  print(pt2)
   print(builder.apply(pt2))
 
 if __name__ == '__main__':
