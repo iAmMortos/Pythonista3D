@@ -53,7 +53,7 @@ class Matrix (object):
     """
     if self.dimensions != mtx.dimensions:
       raise MatrixSizeMismatchError("Matrices must be the same dimensions to add. [%s] and [%s] provided." % self.dimensions, mtx.dimensions)
-    return Matrix(self._nrows, self._ncols, list(map(lambda a: a[0] + a[1], list(zip(self._data, mtx._data)))))
+    return Matrix(self._nrows, self._ncols, [z[0] + z[1] for z in zip(self._data, mtx._data)])
 
   def subtract(self, mtx: Matrix) -> Matrix:
     """
@@ -63,7 +63,7 @@ class Matrix (object):
     """
     if self.dimensions != mtx.dimensions:
       raise MatrixSizeMismatchError("Matrices must be the same dimensions to subtract. [%s] and [%s] provided." % self.dimensions, mtx.dimensions)
-    return Matrix(self._nrows, self._ncols, list(map(lambda a: a[0] - a[1], list(zip(self._data, mtx._data)))))
+    return Matrix(self._nrows, self._ncols, [z[0] - z[1] for z in zip(self._data, mtx._data)])
     
   def add_const(self, const: Number) -> Matrix:
     """
@@ -118,7 +118,7 @@ class Matrix (object):
       for col in range(mtx._ncols):
         r = self.get_row(row)
         c = mtx.get_col(col)
-        new_mtx.set(row, col, sum(list(map(lambda a: a[0]*a[1], list(zip(r, c))))))
+        new_mtx.set(row, col, sum([z[0] * z[1] for z in zip(r, c)]))
     return new_mtx
 
   def transpose(self) -> Matrix:
@@ -246,15 +246,18 @@ class Matrix (object):
     """
     return self._nrows, self._ncols
 
-  def __add__(self, mtx):
+  def __add__(self, mtx: Union[Matrix, Number]) -> Matrix:
     if isinstance(mtx, Matrix):
       return self.add(mtx)
     elif isinstance(mtx, Number):
       return self.add_const(mtx)
     else:
       raise TypeError("Cannot add type [%s] to a matrix." % type(mtx))
+
+  def __radd__(self, other: Number) -> Matrix:
+    return self.__add__(other)
     
-  def __sub__(self, mtx):
+  def __sub__(self, mtx: Union[Matrix, Number]) -> Matrix:
     if isinstance(mtx, Matrix):
       return self.subtract(mtx)
     elif isinstance(mtx, Number):
@@ -262,7 +265,7 @@ class Matrix (object):
     else:
       raise TypeError("Cannot subtract type [%s] from a matrix." % type(mtx))
 
-  def __mul__(self, mtx):
+  def __mul__(self, mtx: Union[Matrix, Number]) -> Matrix:
     if isinstance(mtx, Matrix):
       return self.dot(mtx)
     elif isinstance(mtx, Number):
@@ -270,19 +273,22 @@ class Matrix (object):
     else:
       raise TypeError("Cannot multiply type [%s] with a matrix." % type(mtx))
 
-  def __floordiv__(self, const):
+  def __rmul__(self, other: Number) -> Matrix:
+    return self.__mul__(other)
+
+  def __floordiv__(self, const: Number) -> Matrix:
     if isinstance(const, Number):
       return self.int_divide(const)
     else:
       raise TypeError("Cannot int divide a matrix by type [%s]." % type(const))
 
-  def __truediv__(self, const):
+  def __truediv__(self, const: Number) -> Matrix:
     if isinstance(const, Number):
       return self.divide(const)
     else:
       raise TypeError("Cannot divide a matrix by type [%s]." % type(const))
 
-  def __neg__(self):
+  def __neg__(self) -> Matrix:
     return self.negative()
     
   def __repr__(self):
@@ -295,7 +301,7 @@ class Matrix (object):
 
 
 class IdentityMatrix(Matrix):
-  def __init__(self, size):
+  def __init__(self, size: int):
     """
     Represents a SQUARE matrix of given size with 1's along the diagonal, and 0's everywhere else.
     :param size: the size of this square matrix

@@ -2,10 +2,9 @@
 from pythonista3d.matrix import Matrix
 
 def main():
-  m1 = Matrix(1, 3, [1, 2, 3])
-  m2 = Matrix(3, 1, [4, 5, 6])
-  print(m1 * m2)
-  print(m2 * m1)
+  m = Matrix(2, 2, [4, -1, 0, 5])
+  m2 = 2 * m
+  print(m2)
 
 if __name__ == '__main__':
   main()
