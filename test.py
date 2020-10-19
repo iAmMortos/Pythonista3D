@@ -2,7 +2,7 @@
 import math
 from pythonista3d.matrix import Matrix
 from pythonista3d.points import Point2D
-from pythonista3d.transform import Transform2D, Transform2DBuilder, ReflectionLine2D
+from pythonista3d.transform2d import Transform2D, Transform2DBuilder, ReflectionLine2D
 
 def main():
   print("Step-by-step transformation:")

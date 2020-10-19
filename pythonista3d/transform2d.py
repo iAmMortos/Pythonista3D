@@ -1,15 +1,9 @@
 
 import math
 from pythonista3d.matrix import Matrix
-from pythonista3d.points import Point2D, Point3D
+from pythonista3d.points import Point2D
 from numbers import Number
 from enum import Enum
-
-
-def deg2rad(deg): return deg * math.pi / 180
-
-
-def rad2deg(rad): return rad * 180 / math.pi
 
 
 class ReflectionLine2D(Enum):
@@ -225,7 +219,3 @@ class Transform2DBuilder(object):
     """
     pmx = Matrix.from_point_with_padding(pt)
     return Point2D(*(self._mtx * pmx).as_list()[:2])
-
-
-class Transform3D(object):
-  pass
