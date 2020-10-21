@@ -3,13 +3,8 @@ import math
 from pythonista3d.matrix import Matrix
 from pythonista3d.points import Point3D
 from numbers import Number
+from typing import SupportsFloat
 from enum import Enum
-
-
-def deg2rad(deg): return deg * math.pi / 180
-
-
-def rad2deg(rad): return rad * 180 / math.pi
 
 
 class ReflectionLine3D(Enum):
@@ -36,11 +31,11 @@ class Transform3D(object):
   """
 
   @staticmethod
-  def rotation_matrix(axis: "RotationAxis", rads: Number) -> "Matrix":
+  def rotation_matrix(axis: "RotationAxis", rads: SupportsFloat) -> "Matrix":
     """
     :param axis: the axis around which to perform the rotation
     :param rads: the amount of desired rotation (in radians)
-    :return: A matrix representing the desired rotation operationj
+    :return: A matrix representing the desired rotation operation
     """
     m = None
     if RotationAxis.x == axis:
@@ -61,7 +56,7 @@ class Transform3D(object):
     return m
 
   @staticmethod
-  def rotate(pt: "Point3D", axis: "RotationAxis", rads: Number) -> "Point3D":
+  def rotate(pt: "Point3D", axis: "RotationAxis", rads: SupportsFloat) -> "Point3D":
     """
     Rotate a given point by the amount specified (in radians)
     :param pt: a 2D Point to rotate
@@ -74,30 +69,30 @@ class Transform3D(object):
     return Point3D(*(tmx * pmx).as_list()[:3])
 
   @staticmethod
-  def scaling_matrix(xscale: Number, yscale: Number, zscale: Number) -> "Matrix":
+  def scaling_matrix(x_scale: Number, y_scale: Number, z_scale: Number) -> "Matrix":
     """
-    :param xscale: the amount of scaling in the x direction
-    :param yscale: the amount of scaling in the y direction
-    :param zscale: the amount of scaling in the z direction
+    :param x_scale: the amount of scaling in the x direction
+    :param y_scale: the amount of scaling in the y direction
+    :param z_scale: the amount of scaling in the z direction
     :return: A matrix representing the desired scale operation
     """
-    return Matrix(4, 4, [xscale, 0, 0, 0,
-                         0, yscale, 0, 0,
-                         0, 0, zscale, 0,
+    return Matrix(4, 4, [x_scale, 0, 0, 0,
+                         0, y_scale, 0, 0,
+                         0, 0, z_scale, 0,
                          0, 0, 0, 1])
 
   @staticmethod
-  def scale(pt: "Point3D", xscale: Number, yscale: Number, zscale: Number) -> "Point3D":
+  def scale(pt: "Point3D", x_scale: Number, y_scale: Number, z_scale: Number) -> "Point3D":
     """
-    Scale a given point by the xscale and yscale amounts
+    Scale a given point by the x_scale and y_scale amounts
     :param pt: a 2D Point to scale
-    :param xscale: the amount of scaling in the x direction
-    :param yscale: the amount of scaling in the y direction
-    :param zscale: the amount of scaling in the z direction
+    :param x_scale: the amount of scaling in the x direction
+    :param y_scale: the amount of scaling in the y direction
+    :param z_scale: the amount of scaling in the z direction
     :return: A scaled point
     """
     pmx = Matrix.from_point_with_padding(pt)
-    tmx = Transform3D.scaling_matrix(xscale, yscale, zscale)
+    tmx = Transform3D.scaling_matrix(x_scale, y_scale, z_scale)
     return Point3D(*(tmx * pmx).as_list()[:3])
 
   @staticmethod
@@ -119,17 +114,18 @@ class Transform3D(object):
                          0, 0, 0, 1])
 
   @staticmethod
-  def shear(pt: "Point3D", xy: Number = 0, xz: Number = 0,
-                           yx: Number = 0, yz: Number = 0,
-                           zx: Number = 0, zy: Number = 0) -> "Point3D":
+  def shear(pt: "Point3D",
+            xy: Number = 0, xz: Number = 0,
+            yx: Number = 0, yz: Number = 0,
+            zx: Number = 0, zy: Number = 0) -> "Point3D":
     """
     Shear a given point by the horizontal and vertical amount specified
     :param pt: a 2D Point to shear
     :parameter xy: amount of shearing on x values in the y direction
     :parameter xz: amount of shearing on x values in the z direction
-    :parameter yx: amount of shearing on y values in the x direction    :parameter zy: amount of shearing on z values in the y direction
-
+    :parameter yx: amount of shearing on y values in the x direction
     :parameter yz: amount of shearing on y values in the z direction
+    :parameter zy: amount of shearing on z values in the y direction
     :parameter zx: amount of shearing on z values in the x direction
     :return: A sheared point
     """
@@ -201,60 +197,67 @@ class Transform3D(object):
     return Point3D(*(tmx * pmx).as_list()[:3])
 
 
-class Transform2DBuilder(object):
+class Transform3DBuilder(object):
   def __init__(self):
     """
     Composites multiple transformations into a single transformation matrix for efficiency of computation.
     Can produce the actual finished matrix, or apply the matrix to a given 2D point.
     """
-    self._mtx = Matrix.identity_matrix(3)
+    self._mtx = Matrix.identity_matrix(4)
 
-  def rotate(self, rads):
+  def rotate(self, axis, rads):
     """
     Add a rotation operation to the transformation matrix.
+    :param axis:
     :param rads: the amount to rotate (in radians)
     :return: self, for method chaining.
     """
-    self._mtx = Transform3D.rotation_matrix(rads) * self._mtx
+    self._mtx = Transform3D.rotation_matrix(axis, rads) * self._mtx
     return self
 
-  def scale(self, xscale, yscale):
+  def scale(self, x_scale, y_scale, z_scale):
     """
     Add a scale operation to the transformation matrix.
-    :param xscale: amount to scale in the x direction
-    :param yscale: amount to scale in the y direction
+    :param x_scale: amount to scale in the x direction
+    :param y_scale: amount to scale in the y direction
+    :param z_scale:
     :return: self, for method chaining.
     """
-    self._mtx = Transform3D.scaling_matrix(xscale, yscale) * self._mtx
+    self._mtx = Transform3D.scaling_matrix(x_scale, y_scale, z_scale) * self._mtx
     return self
 
-  def shear(self, horizontal, vertical):
+  def shear(self, xy, xz, yx, yz, zx, zy):
     """
     Add a shear operation to the transformation matrix.
-    :param horizontal: amount of horizontal shear
-    :param vertical: amount of vertical shearj
+    :param xy:
+    :param xz:
+    :param yx:
+    :param yz:
+    :param zx:
+    :param zy:
     :return: self, for method chaining
     """
-    self._mtx = Transform3D.shearing_matrix(horizontal, vertical) * self._mtx
+    self._mtx = Transform3D.shearing_matrix(xy, xz, yx, yz, zx, zy) * self._mtx
     return self
 
-  def translate(self, dx, dy):
+  def translate(self, dx, dy, dz):
     """
     Add a translation operation to the transformation matrix.
     :param dx: Amount to translate in the x direction
     :param dy: Amount to translate in the y direction
+    :param dz: Amount to translate in the z direction
     :return: self, for method chaining
     """
-    self._mtx = Transform3D.translation_matrix(dx, dy) * self._mtx
+    self._mtx = Transform3D.translation_matrix(dx, dy, dz) * self._mtx
     return self
 
-  def reflect(self, line):
+  def reflect(self, plane):
     """
     Add a reflection operation to the transformation matrix.
-    :param line: the line over which a point should be reflected
+    :param plane: the plane over which a point should be reflected
     :return: self, for method chaining
     """
-    self._mtx = Transform3D.reflection_matrix(line) * self._mtx
+    self._mtx = Transform3D.reflection_matrix(plane) * self._mtx
     return self
 
   def build(self) -> "Matrix":
@@ -263,10 +266,10 @@ class Transform2DBuilder(object):
     """
     return self._mtx.clone()
 
-  def apply(self, pt: "Point2D") -> "Point2D":
+  def apply(self, pt: "Point3D") -> "Point3D":
     """
     :param pt: the point to which the transformation should be applied
     :return: the point after transformation
     """
     pmx = Matrix.from_point_with_padding(pt)
-    return Point2D(*(self._mtx * pmx).as_list()[:2])
+    return Point3D(*(self._mtx * pmx).as_list()[:3])

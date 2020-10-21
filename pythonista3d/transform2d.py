@@ -3,6 +3,7 @@ import math
 from pythonista3d.matrix import Matrix
 from pythonista3d.points import Point2D
 from numbers import Number
+from typing import SupportsFloat
 from enum import Enum
 
 
@@ -24,17 +25,17 @@ class Transform2D(object):
   """
 
   @staticmethod
-  def rotation_matrix(rads: Number) -> "Matrix":
+  def rotation_matrix(rads: SupportsFloat) -> "Matrix":
     """
     :param rads: the amount of desired rotation (in radians)
-    :return: A matrix representing the desired rotation operationj
+    :return: A matrix representing the desired rotation operation
     """
     return Matrix(3, 3, [math.cos(rads), -math.sin(rads), 0,
                          math.sin(rads), math.cos(rads), 0,
                          0, 0, 1])
 
   @staticmethod
-  def rotate(pt: "Point2D", rads: Number) -> "Point2D":
+  def rotate(pt: "Point2D", rads: SupportsFloat) -> "Point2D":
     """
     Rotate a given point by the amount specified (in radians)
     :param pt: a 2D Point to rotate
@@ -46,27 +47,27 @@ class Transform2D(object):
     return Point2D(*(tmx * pmx).as_list()[:2])
 
   @staticmethod
-  def scaling_matrix(xscale: Number, yscale: Number) -> "Matrix":
+  def scaling_matrix(x_scale: Number, y_scale: Number) -> "Matrix":
     """
-    :param xscale: the amount of scaling in the x direction
-    :param yscale: the amount of scaling in the y direction
+    :param x_scale: the amount of scaling in the x direction
+    :param y_scale: the amount of scaling in the y direction
     :return: A matrix representing the desired scale operation
     """
-    return Matrix(3, 3, [xscale, 0, 0,
-                         0, yscale, 0,
+    return Matrix(3, 3, [x_scale, 0, 0,
+                         0, y_scale, 0,
                          0, 0, 1])
 
   @staticmethod
-  def scale(pt: "Point2D", xscale: Number, yscale: Number) -> "Point2D":
+  def scale(pt: "Point2D", x_scale: Number, y_scale: Number) -> "Point2D":
     """
-    Scale a given point by the xscale and yscale amounts
+    Scale a given point by the x_scale and y_scale amounts
     :param pt: a 2D Point to scale
-    :param xscale: the amount of scaling in the x direction
-    :param yscale: the amount of scaling in the y direction
+    :param x_scale: the amount of scaling in the x direction
+    :param y_scale: the amount of scaling in the y direction
     :return: A scaled point
     """
     pmx = Matrix.from_point_with_padding(pt)
-    tmx = Transform2D.scaling_matrix(xscale, yscale)
+    tmx = Transform2D.scaling_matrix(x_scale, y_scale)
     return Point2D(*(tmx * pmx).as_list()[:2])
 
   @staticmethod
@@ -167,21 +168,21 @@ class Transform2DBuilder(object):
     self._mtx = Transform2D.rotation_matrix(rads) * self._mtx
     return self
 
-  def scale(self, xscale, yscale):
+  def scale(self, x_scale, y_scale):
     """
     Add a scale operation to the transformation matrix.
-    :param xscale: amount to scale in the x direction
-    :param yscale: amount to scale in the y direction
+    :param x_scale: amount to scale in the x direction
+    :param y_scale: amount to scale in the y direction
     :return: self, for method chaining.
     """
-    self._mtx = Transform2D.scaling_matrix(xscale, yscale) * self._mtx
+    self._mtx = Transform2D.scaling_matrix(x_scale, y_scale) * self._mtx
     return self
 
   def shear(self, horizontal, vertical):
     """
     Add a shear operation to the transformation matrix.
     :param horizontal: amount of horizontal shear
-    :param vertical: amount of vertical shearj
+    :param vertical: amount of vertical shear
     :return: self, for method chaining
     """
     self._mtx = Transform2D.shearing_matrix(horizontal, vertical) * self._mtx
