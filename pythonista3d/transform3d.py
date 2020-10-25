@@ -7,7 +7,7 @@ from typing import SupportsFloat
 from enum import Enum
 
 
-class ReflectionLine3D(Enum):
+class ReflectionPlane3D(Enum):
   """
   Represents the different planes of reflection in 3D space
   """
@@ -18,6 +18,9 @@ class ReflectionLine3D(Enum):
 
 
 class RotationAxis(Enum):
+  """
+  Represents the different axes around which points can be rotated
+  """
   x = "x"
   y = "y"
   z = "z"
@@ -31,37 +34,39 @@ class Transform3D(object):
   """
 
   @staticmethod
-  def rotation_matrix(axis: "RotationAxis", rads: SupportsFloat) -> "Matrix":
+  def rotation_matrix(axis: "RotationAxis", rads: SupportsFloat = 0) -> "Matrix":
     """
     :param axis: the axis around which to perform the rotation
-    :param rads: the amount of desired rotation (in radians)
+    :param rads: the amount of desired rotation (in radians). Default: 0.
     :return: A matrix representing the desired rotation operation
     """
     m = None
+    c = math.cos(rads)
+    s = math.sin(rads)
     if RotationAxis.x == axis:
       m = Matrix(4, 4, [1, 0, 0, 0,
-                        0, math.cos(rads), -math.sin(rads), 0,
-                        0, math.sin(rads), math.cos(rads), 0,
+                        0, c, -s, 0,
+                        0, s, c, 0,
                         0, 0, 0, 1])
     elif RotationAxis.y == axis:
-      m = Matrix(4, 4, [math.cos(rads), 0, math.sin(rads), 0,
+      m = Matrix(4, 4, [c, 0, s, 0,
                         0, 1, 0, 0,
-                        -math.sin(rads), 0, math.cos(rads), 0,
+                        -s, 0, c, 0,
                         0, 0, 0, 1])
     elif RotationAxis.z == axis:
-      m = Matrix(4, 4, [math.cos(rads), -math.sin(rads), 0, 0,
-                        math.sin(rads), math.cos(rads), 0, 0,
+      m = Matrix(4, 4, [c, -s, 0, 0,
+                        s, c, 0, 0,
                         0, 0, 1, 0,
                         0, 0, 0, 1])
     return m
 
   @staticmethod
-  def rotate(pt: "Point3D", axis: "RotationAxis", rads: SupportsFloat) -> "Point3D":
+  def rotate(pt: "Point3D", axis: "RotationAxis", rads: SupportsFloat = 0) -> "Point3D":
     """
     Rotate a given point by the amount specified (in radians)
-    :param pt: a 2D Point to rotate
+    :param pt: a 3D Point to rotate
     :param axis: the axis around which to perform the rotation
-    :param rads: the amount of desired rotation (in radians)j
+    :param rads: the amount of desired rotation (in radians). Default: 0.
     :return: A point that has been rotated by the given amount
     """
     pmx = Matrix.from_point_with_padding(pt)
@@ -69,30 +74,30 @@ class Transform3D(object):
     return Point3D(*(tmx * pmx).as_list()[:3])
 
   @staticmethod
-  def scaling_matrix(x_scale: Number, y_scale: Number, z_scale: Number) -> "Matrix":
+  def scaling_matrix(x: Number = 1, y: Number = 1, z: Number = 1) -> "Matrix":
     """
-    :param x_scale: the amount of scaling in the x direction
-    :param y_scale: the amount of scaling in the y direction
-    :param z_scale: the amount of scaling in the z direction
+    :param x: the amount of scaling in the x direction. Default: 1.
+    :param y: the amount of scaling in the y direction. Default: 1.
+    :param z: the amount of scaling in the z direction. Default: 1.
     :return: A matrix representing the desired scale operation
     """
-    return Matrix(4, 4, [x_scale, 0, 0, 0,
-                         0, y_scale, 0, 0,
-                         0, 0, z_scale, 0,
+    return Matrix(4, 4, [x, 0, 0, 0,
+                         0, y, 0, 0,
+                         0, 0, z, 0,
                          0, 0, 0, 1])
 
   @staticmethod
-  def scale(pt: "Point3D", x_scale: Number, y_scale: Number, z_scale: Number) -> "Point3D":
+  def scale(pt: "Point3D", x: Number = 1, y: Number = 1, z: Number = 1) -> "Point3D":
     """
-    Scale a given point by the x_scale and y_scale amounts
-    :param pt: a 2D Point to scale
-    :param x_scale: the amount of scaling in the x direction
-    :param y_scale: the amount of scaling in the y direction
-    :param z_scale: the amount of scaling in the z direction
+    Scale a given point by the x, y, and z amounts
+    :param pt: a 3D Point to scale
+    :param x: the amount of scaling in the x direction. Default: 1.
+    :param y: the amount of scaling in the y direction. Default: 1.
+    :param z: the amount of scaling in the z direction. Default: 1.
     :return: A scaled point
     """
     pmx = Matrix.from_point_with_padding(pt)
-    tmx = Transform3D.scaling_matrix(x_scale, y_scale, z_scale)
+    tmx = Transform3D.scaling_matrix(x, y, z)
     return Point3D(*(tmx * pmx).as_list()[:3])
 
   @staticmethod
@@ -100,12 +105,12 @@ class Transform3D(object):
                       yx: Number = 0, yz: Number = 0,
                       zx: Number = 0, zy: Number = 0) -> "Matrix":
     """
-    :parameter xy: amount of shearing on x values in the y direction
-    :parameter xz: amount of shearing on x values in the z direction
-    :parameter yx: amount of shearing on y values in the x direction
-    :parameter yz: amount of shearing on y values in the z direction
-    :parameter zx: amount of shearing on z values in the x direction
-    :parameter zy: amount of shearing on z values in the y direction
+    :parameter xy: amount of shearing on x values in the y direction. Default: 0.
+    :parameter xz: amount of shearing on x values in the z direction. Default: 0.
+    :parameter yx: amount of shearing on y values in the x direction. Default: 0.
+    :parameter yz: amount of shearing on y values in the z direction. Default: 0.
+    :parameter zx: amount of shearing on z values in the x direction. Default: 0.
+    :parameter zy: amount of shearing on z values in the y direction. Default: 0.
     :return: A matrix representing the desired shearing operation
     """
     return Matrix(4, 4, [1, yx, zx, 0,
@@ -119,14 +124,14 @@ class Transform3D(object):
             yx: Number = 0, yz: Number = 0,
             zx: Number = 0, zy: Number = 0) -> "Point3D":
     """
-    Shear a given point by the horizontal and vertical amount specified
-    :param pt: a 2D Point to shear
-    :parameter xy: amount of shearing on x values in the y direction
-    :parameter xz: amount of shearing on x values in the z direction
-    :parameter yx: amount of shearing on y values in the x direction
-    :parameter yz: amount of shearing on y values in the z direction
-    :parameter zy: amount of shearing on z values in the y direction
-    :parameter zx: amount of shearing on z values in the x direction
+    Shear a given point by the amounts specified
+    :param pt: a 3D Point to shear. Default: 0.
+    :parameter xy: amount of shearing on x values in the y direction. Default: 0.
+    :parameter xz: amount of shearing on x values in the z direction. Default: 0.
+    :parameter yx: amount of shearing on y values in the x direction. Default: 0.
+    :parameter yz: amount of shearing on y values in the z direction. Default: 0.
+    :parameter zy: amount of shearing on z values in the y direction. Default: 0.
+    :parameter zx: amount of shearing on z values in the x direction. Default: 0.
     :return: A sheared point
     """
     pmx = Matrix.from_point_with_padding(pt)
@@ -134,11 +139,11 @@ class Transform3D(object):
     return Point3D(*(tmx * pmx).as_list()[:3])
 
   @staticmethod
-  def translation_matrix(dx: Number, dy: Number, dz: Number) -> "Matrix":
+  def translation_matrix(dx: Number = 0, dy: Number = 0, dz: Number = 0) -> "Matrix":
     """
-    :param dx: change in the x direction
-    :param dy: change in the y direction
-    :param dz: change in the z direction
+    :param dx: change in the x direction. Default: 0.
+    :param dy: change in the y direction. Default: 0.
+    :param dz: change in the z direction. Default: 0.
     :return: A matrix representing the desired translation operation
     """
     return Matrix(4, 4, [1, 0, 0, dx,
@@ -147,13 +152,13 @@ class Transform3D(object):
                          0, 0, 0, 1])
 
   @staticmethod
-  def translate(pt: "Point3D", dx: Number, dy: Number, dz: Number) -> "Point3D":
+  def translate(pt: "Point3D", dx: Number = 0, dy: Number = 0, dz: Number = 0) -> "Point3D":
     """
     Translate the given point by the x and y amounts specified
-    :param pt: a 2D point to translate
-    :param dx: change in the x direction
-    :param dy: change in the y direction
-    :param dz: change in the z direction
+    :param pt: a 3D point to translate
+    :param dx: change in the x direction. Default: 0.
+    :param dy: change in the y direction. Default: 0.
+    :param dz: change in the z direction. Default: 0.
     :return: A translated point
     """
     pmx = Matrix.from_point_with_padding(pt)
@@ -161,39 +166,39 @@ class Transform3D(object):
     return Point3D(*(tmx * pmx).as_list()[:3])
 
   @staticmethod
-  def reflection_matrix(plane: "ReflectionLine3D") -> Matrix:
+  def reflection_matrix(plane: "ReflectionPlane3D") -> Matrix:
     """
     :param plane: the plane over which the reflection should be performed
     :return: A matrix representing the desired reflection operation
     """
-    d = {ReflectionLine3D.xy: [1, 0, 0, 0,
-                               0, 1, 0, 0,
-                               0, 0, -1, 0,
-                               0, 0, 0, 1],
-         ReflectionLine3D.yz: [-1, 0, 0, 0,
-                               0, 1, 0, 0,
-                               0, 0, 1, 0,
-                               0, 0, 0, 1],
-         ReflectionLine3D.zx: [1, 0, 0, 0,
-                               0, -1, 0, 0,
-                               0, 0, 1, 0,
-                               0, 0, 0, 1],
-         ReflectionLine3D.origin: [-1, 0, 0, 0,
-                                   0, -1, 0, 0,
-                                   0, 0, -1, 0,
-                                   0, 0, 0, 1]}
+    d = {ReflectionPlane3D.xy: [1, 0, 0, 0,
+                                0, 1, 0, 0,
+                                0, 0, -1, 0,
+                                0, 0, 0, 1],
+         ReflectionPlane3D.yz: [-1, 0, 0, 0,
+                                0, 1, 0, 0,
+                                0, 0, 1, 0,
+                                0, 0, 0, 1],
+         ReflectionPlane3D.zx: [1, 0, 0, 0,
+                                0, -1, 0, 0,
+                                0, 0, 1, 0,
+                                0, 0, 0, 1],
+         ReflectionPlane3D.origin: [-1, 0, 0, 0,
+                                    0, -1, 0, 0,
+                                    0, 0, -1, 0,
+                                    0, 0, 0, 1]}
     return Matrix(4, 4, d[plane])
 
   @staticmethod
-  def reflect(pt: "Point3D", line: "ReflectionLine3D") -> "Point3D":
+  def reflect(pt: "Point3D", plane: "ReflectionPlane3D") -> "Point3D":
     """
-    Reflect the given point over the specified reflection line
-    :param pt: a 2D point to reflect
-    :param line: a ReflectionLine2D value specifying the line of reflection
+    Reflect the given point over the specified reflection plane
+    :param pt: a 3D point to reflect
+    :param plane: a ReflectionPlane3D value specifying the plane of reflection in 3D space.
     :return: A reflected point
     """
     pmx = Matrix.from_point_with_padding(pt)
-    tmx = Transform3D.reflection_matrix(line)
+    tmx = Transform3D.reflection_matrix(plane)
     return Point3D(*(tmx * pmx).as_list()[:3])
 
 
@@ -201,57 +206,60 @@ class Transform3DBuilder(object):
   def __init__(self):
     """
     Composites multiple transformations into a single transformation matrix for efficiency of computation.
-    Can produce the actual finished matrix, or apply the matrix to a given 2D point.
+    Can produce the actual finished matrix, or apply the matrix to a given 3D point.
     """
     self._mtx = Matrix.identity_matrix(4)
 
-  def rotate(self, axis, rads):
+  def rotate(self, axis, rads: SupportsFloat = 0) -> "Transform3DBuilder":
     """
     Add a rotation operation to the transformation matrix.
     :param axis:
-    :param rads: the amount to rotate (in radians)
+    :param rads: the amount to rotate (in radians). Default: 0.
     :return: self, for method chaining.
     """
     self._mtx = Transform3D.rotation_matrix(axis, rads) * self._mtx
     return self
 
-  def scale(self, x_scale, y_scale, z_scale):
+  def scale(self, x: Number = 1, y: Number = 1, z: Number = 1) -> "Transform3DBuilder":
     """
     Add a scale operation to the transformation matrix.
-    :param x_scale: amount to scale in the x direction
-    :param y_scale: amount to scale in the y direction
-    :param z_scale:
+    :param x: amount to scale in the x direction. Default: 1.
+    :param y: amount to scale in the y direction. Default: 1.
+    :param z: amount to scale in the z direction. Default: 1.
     :return: self, for method chaining.
     """
-    self._mtx = Transform3D.scaling_matrix(x_scale, y_scale, z_scale) * self._mtx
+    self._mtx = Transform3D.scaling_matrix(x, y, z) * self._mtx
     return self
 
-  def shear(self, xy, xz, yx, yz, zx, zy):
+  def shear(self,
+            xy: Number = 0, xz: Number = 0,
+            yx: Number = 0, yz: Number = 0,
+            zx: Number = 0, zy: Number = 0) -> "Transform3DBuilder":
     """
     Add a shear operation to the transformation matrix.
-    :param xy:
-    :param xz:
-    :param yx:
-    :param yz:
-    :param zx:
-    :param zy:
+    :param xy: The amount to shear the x points in the y direction. Default: 0.
+    :param xz: The amount to shear the x points in the z direction. Default: 0.
+    :param yx: The amount to shear the y points in the x direction. Default: 0.
+    :param yz: The amount to shear the y points in the z direction. Default: 0.
+    :param zx: The amount to shear the z points in the x direction. Default: 0.
+    :param zy: The amount to shear the z points in the y direction. Default: 0.
     :return: self, for method chaining
     """
     self._mtx = Transform3D.shearing_matrix(xy, xz, yx, yz, zx, zy) * self._mtx
     return self
 
-  def translate(self, dx, dy, dz):
+  def translate(self, dx: Number = 0, dy: Number = 0, dz: Number = 0) -> "Transform3DBuilder":
     """
     Add a translation operation to the transformation matrix.
-    :param dx: Amount to translate in the x direction
-    :param dy: Amount to translate in the y direction
-    :param dz: Amount to translate in the z direction
+    :param dx: Amount to translate in the x direction. Default: 0.
+    :param dy: Amount to translate in the y direction. Default: 0.
+    :param dz: Amount to translate in the z direction. Default: 0.
     :return: self, for method chaining
     """
     self._mtx = Transform3D.translation_matrix(dx, dy, dz) * self._mtx
     return self
 
-  def reflect(self, plane):
+  def reflect(self, plane) -> "Transform3DBuilder":
     """
     Add a reflection operation to the transformation matrix.
     :param plane: the plane over which a point should be reflected

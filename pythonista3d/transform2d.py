@@ -30,8 +30,10 @@ class Transform2D(object):
     :param rads: the amount of desired rotation (in radians). Default: 0.
     :return: A matrix representing the desired rotation operation
     """
-    return Matrix(3, 3, [math.cos(rads), -math.sin(rads), 0,
-                         math.sin(rads), math.cos(rads), 0,
+    c = math.cos(rads)
+    s = math.sin(rads)
+    return Matrix(3, 3, [c, -s, 0,
+                         s, c, 0,
                          0, 0, 1])
 
   @staticmethod
