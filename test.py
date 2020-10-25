@@ -29,6 +29,8 @@ def main():
   pt2 = Point2D(3, 1)
   print(pt2)
   print(builder.apply(pt2))
+  
+  print(builder.build())
 
 if __name__ == '__main__':
   main()
