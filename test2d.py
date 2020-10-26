@@ -1,7 +1,7 @@
 
 import math
 from pythonista3d.points import Point2D
-from pythonista3d.transform2d import Transform2D, Transform2DBuilder, ReflectionLine2D
+from pythonista3d.transform2d import Transform2D, Transform2DBuilder, ReflectionLine
 
 
 def main():
@@ -16,7 +16,7 @@ def main():
   print(pt)
   pt = Transform2D.rotate(pt, math.pi/2)
   print(pt)
-  pt = Transform2D.reflect(pt, ReflectionLine2D.origin)
+  pt = Transform2D.reflect(pt, ReflectionLine.origin)
   print(pt)
 
   print("\nCombined transformation:")
@@ -25,7 +25,7 @@ def main():
          .translate(-3, 10)\
          .scale(3, 3)\
          .rotate(math.pi / 2)\
-         .reflect(ReflectionLine2D.origin)
+         .reflect(ReflectionLine.origin)
   pt2 = Point2D(3, 1)
   print(pt2)
   print(builder.apply(pt2))

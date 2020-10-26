@@ -7,7 +7,7 @@ from typing import SupportsFloat
 from enum import Enum
 
 
-class ReflectionLine2D(Enum):
+class ReflectionLine(Enum):
   """
   Represents the different lines of reflection in 2D space
 
@@ -126,27 +126,27 @@ class Transform2D(object):
     return Point2D(*(tmx * pmx).as_list()[:2])
 
   @staticmethod
-  def reflection_matrix(line: "ReflectionLine2D") -> Matrix:
+  def reflection_matrix(line: "ReflectionLine") -> Matrix:
     """
     :param line: the line over which the reflection should be performed
     :return: A matrix representing the desired reflection operation
     """
-    d = {ReflectionLine2D.x: [1, 0, 0,
-                              0, -1, 0,
-                              0, 0, 1],
-         ReflectionLine2D.y: [-1, 0, 0,
-                              0, 1, 0,
-                              0, 0, 1],
-         ReflectionLine2D.origin: [-1, 0, 0,
-                                   0, -1, 0,
-                                   0, 0, 1],
-         ReflectionLine2D.xy: [0, 1, 0,
-                               1, 0, 0,
-                               0, 0, 1]}
+    d = {ReflectionLine.x: [1, 0, 0,
+                            0, -1, 0,
+                            0, 0, 1],
+         ReflectionLine.y: [-1, 0, 0,
+                            0, 1, 0,
+                            0, 0, 1],
+         ReflectionLine.origin: [-1, 0, 0,
+                                 0, -1, 0,
+                                 0, 0, 1],
+         ReflectionLine.xy: [0, 1, 0,
+                             1, 0, 0,
+                             0, 0, 1]}
     return Matrix(3, 3, d[line])
 
   @staticmethod
-  def reflect(pt: "Point2D", line: "ReflectionLine2D") -> "Point2D":
+  def reflect(pt: "Point2D", line: "ReflectionLine") -> "Point2D":
     """
     Reflect the given point over the specified reflection line
     :param pt: a 2D point to reflect
@@ -205,7 +205,7 @@ class Transform2DBuilder(object):
     self._mtx = Transform2D.translation_matrix(dx, dy) * self._mtx
     return self
 
-  def reflect(self, line: "ReflectionLine2D") -> "Transform2DBuilder":
+  def reflect(self, line: "ReflectionLine") -> "Transform2DBuilder":
     """
     Add a reflection operation to the transformation matrix.
     :param line: the line over which a point should be reflected

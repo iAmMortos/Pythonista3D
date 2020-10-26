@@ -53,7 +53,7 @@ class Point(object):
 
 
 class Point2D(Point):
-  def __init__(self, x: int = 0, y: int = 0):
+  def __init__(self, x: Number = 0, y: Number = 0):
     """
     Represents a 2-dimensional coordinate point. Default values for x and y are 0 if not explicitly set.
     :param x:
@@ -82,7 +82,7 @@ class Point2D(Point):
 
 
 class Point3D(Point):
-  def __init__(self, x: int = 0, y: int = 0, z: int = 0):
+  def __init__(self, x: Number = 0, y: Number = 0, z: Number = 0):
     """
     Represents a 3-dimensional coordinate point. Default values for x, y, and z are 0 if not explicitly set.
     :param x:

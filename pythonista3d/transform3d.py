@@ -7,7 +7,7 @@ from typing import SupportsFloat
 from enum import Enum
 
 
-class ReflectionPlane3D(Enum):
+class ReflectionPlane(Enum):
   """
   Represents the different planes of reflection in 3D space
 
@@ -175,31 +175,31 @@ class Transform3D(object):
     return Point3D(*(tmx * pmx).as_list()[:3])
 
   @staticmethod
-  def reflection_matrix(plane: "ReflectionPlane3D") -> Matrix:
+  def reflection_matrix(plane: "ReflectionPlane") -> Matrix:
     """
     :param plane: the plane over which the reflection should be performed
     :return: A matrix representing the desired reflection operation
     """
-    d = {ReflectionPlane3D.xy: [1, 0, 0, 0,
-                                0, 1, 0, 0,
-                                0, 0, -1, 0,
-                                0, 0, 0, 1],
-         ReflectionPlane3D.yz: [-1, 0, 0, 0,
-                                0, 1, 0, 0,
-                                0, 0, 1, 0,
-                                0, 0, 0, 1],
-         ReflectionPlane3D.zx: [1, 0, 0, 0,
-                                0, -1, 0, 0,
-                                0, 0, 1, 0,
-                                0, 0, 0, 1],
-         ReflectionPlane3D.origin: [-1, 0, 0, 0,
-                                    0, -1, 0, 0,
-                                    0, 0, -1, 0,
-                                    0, 0, 0, 1]}
+    d = {ReflectionPlane.xy: [1, 0, 0, 0,
+                              0, 1, 0, 0,
+                              0, 0, -1, 0,
+                              0, 0, 0, 1],
+         ReflectionPlane.yz: [-1, 0, 0, 0,
+                              0, 1, 0, 0,
+                              0, 0, 1, 0,
+                              0, 0, 0, 1],
+         ReflectionPlane.zx: [1, 0, 0, 0,
+                              0, -1, 0, 0,
+                              0, 0, 1, 0,
+                              0, 0, 0, 1],
+         ReflectionPlane.origin: [-1, 0, 0, 0,
+                                  0, -1, 0, 0,
+                                  0, 0, -1, 0,
+                                  0, 0, 0, 1]}
     return Matrix(4, 4, d[plane])
 
   @staticmethod
-  def reflect(pt: "Point3D", plane: "ReflectionPlane3D") -> "Point3D":
+  def reflect(pt: "Point3D", plane: "ReflectionPlane") -> "Point3D":
     """
     Reflect the given point over the specified reflection plane
     :param pt: a 3D point to reflect
