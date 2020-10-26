@@ -10,6 +10,11 @@ from enum import Enum
 class ReflectionLine2D(Enum):
   """
   Represents the different lines of reflection in 2D space
+
+  - x: Reflects all points over the x axis
+  - y: Reflects all points over the y axis
+  - origin: Reflects all points across the origin
+  - xy: Reflects all points over the f(x)=x line
   """
   x = "x"
   y = "y"

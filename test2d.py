@@ -1,8 +1,8 @@
 
 import math
-from pythonista3d.matrix import Matrix
 from pythonista3d.points import Point2D
 from pythonista3d.transform2d import Transform2D, Transform2DBuilder, ReflectionLine2D
+
 
 def main():
   print("Step-by-step transformation:")
@@ -29,8 +29,7 @@ def main():
   pt2 = Point2D(3, 1)
   print(pt2)
   print(builder.apply(pt2))
-  
-  print(builder.build())
+
 
 if __name__ == '__main__':
   main()

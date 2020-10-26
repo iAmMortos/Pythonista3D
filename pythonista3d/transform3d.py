@@ -10,16 +10,25 @@ from enum import Enum
 class ReflectionPlane3D(Enum):
   """
   Represents the different planes of reflection in 3D space
+
+  - xy: Reflects all points over the xy plane
+  - yz: Reflects all points over the yz plane
+  - zx: Reflects all points over the zx plane
+  - origin: Reflects all points over the origin
   """
-  origin = "origin"
   xy = "xy"
   yz = "yz"
   zx = "zx"
+  origin = "origin"
 
 
 class RotationAxis(Enum):
   """
-  Represents the different axes around which points can be rotated
+  Represents the 3D axes around which rotation can occur
+
+  - x: Rotates all points around the x axis
+  - y: Rotates all points around the y axis
+  - z: Rotates all points around the z axis
   """
   x = "x"
   y = "y"
