@@ -1,0 +1,3 @@
+
+class STLFile(object):
+  pass
