@@ -1,4 +1,4 @@
-
+import test_context
 from pythonista3d.fileformats.stl_file import STLFile
 
 
