@@ -17,7 +17,7 @@ class STLFacet(object):
     self.vs.append(Point3D(*[float(n) for n in vstr.split()[-3:]]))
 
   def __repr__(self):
-    return "{}\n\t{}\n\t{}\n\t{}".format(self.normal, self.vs[0], self.vs[1], self.vs[2])
+    return "{}\n\t{}\n\t{}\n\t{}".format(self.normal, *self.vs)
 
 
 class STLFile(object):
