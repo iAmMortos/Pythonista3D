@@ -235,7 +235,10 @@ class _Step(object):
     self.op = op
     self.kwargs = kwargs
     
-  def to_mtx(self):
+  def to_mtx(self) -> "Matrix":
+    """
+    :return: The transformation matrix represented by this transformation step object, plugging in the given values.
+    """
     m = None
     if Operation3D.rotate == self.op:
       m = Transform3D.rotation_matrix(**self.kwargs)
@@ -249,7 +252,10 @@ class _Step(object):
       m = Transform3D.reflection_matrix(**self.kwargs)
     return m
     
-  def to_reverse_mtx(self):
+  def to_reverse_mtx(self) -> "Matrix":
+    """
+    :return: The transformation matrix that would REVERSE the opepration represented by this transformation step object.
+    """
     kwargs = self.kwargs.copy()
     if Operation3D.rotate == self.op:
       kwargs['rads'] = -kwargs['rads']
@@ -351,6 +357,9 @@ class Transform3DBuilder(object):
     return self._mtx.clone()
     
   def build_reverse(self) -> "Matrix":
+    """
+    :return: the compiled REVERSE transformation matrix (should effectively cancel the `build` matrix)
+    """
     self._rmtx = Matrix.identity_matrix(4)
     for step in self._steps[::-1]:
       self._rmtx = step.to_reverse_mtx() * self._rmtx
@@ -367,6 +376,10 @@ class Transform3DBuilder(object):
     return Point3D(*(self._mtx * pmx).as_list()[:3])
     
   def apply_reverse(self, pt: "Point3D") -> "Point3D":
+    """
+    :param pt: the point to which the REVERSE transformation should be applied
+    :return: the point after the REVERSE transformation
+    """
     if self._rmtx is None:
       raise Exception('Reverse matrix not built yet')
     pmx = Matrix.from_point_with_padding(pt)

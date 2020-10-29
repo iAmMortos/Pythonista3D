@@ -7,13 +7,15 @@ from datetime import datetime
 
 
 def test_with_objects(pts, tb):
+  print("Transforming 100,000 points using object containers...")
   tstart = datetime.now().timestamp()
   transformed = [tb.apply(p) for p in pts]
-  print("Done transforming all points: %s" % (datetime.now().timestamp() - tstart))
+  print("Done transforming all points: %.2f seconds" % (datetime.now().timestamp() - tstart))
   print(transformed[:10])
 
 
 def test_with_primitives(pts, tb):
+  print("\nTransforming 100,000 points using primitives...")
   ml = tb.build().as_list()
   newlist = []
   for pt in pts:
@@ -30,13 +32,14 @@ def test_with_primitives(pts, tb):
   tstart = datetime.now().timestamp()
   for i in range(0, len(newlist), 3):
     transformedlist.append(mult(ml, newlist[i], newlist[i+1], newlist[i+2]))
-  print("Done transforming all points: %s" % (datetime.now().timestamp() - tstart))
+  print("Done transforming all points: %.2f seconds" % (datetime.now().timestamp() - tstart))
   print(transformedlist[:10])
 
 
 
 def main():
   tb = Transform3DBuilder().rotate(RotationAxis.y, math.pi / 4)
+  tb.build()
   pts = []
   for _ in range(100000):
     pts.append(Point3D(random.random(), random.random(), random.random()))
