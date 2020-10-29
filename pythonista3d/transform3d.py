@@ -33,6 +33,17 @@ class RotationAxis(Enum):
   x = "x"
   y = "y"
   z = "z"
+  
+  
+class Operation3D (Enum):
+  """
+  Represents the possible operations that can be performed in 3D space.
+  """
+  rotate = 0
+  scale = 1
+  shear = 2
+  translate = 3
+  reflect = 4
 
 
 class Transform3D(object):
@@ -209,6 +220,57 @@ class Transform3D(object):
     pmx = Matrix.from_point_with_padding(pt)
     tmx = Transform3D.reflection_matrix(plane)
     return Point3D(*(tmx * pmx).as_list()[:3])
+    
+    
+class _Step(object):
+  """
+  An internal class that represents a single, generic transformation step and the necessary arguments to perform that transformation.
+  It is useful to have the raw inputs like this, as it allows the transformation to be modified or even reversed.
+  """
+  def __init__(self, op: "Operation3D", **kwargs):
+    """
+    :param op: the operation being performed in this step.
+    :param kwargs: the keyword arguments required to perform the given transformation
+    """
+    self.op = op
+    self.kwargs = kwargs
+    
+  def to_mtx(self):
+    m = None
+    if Operation3D.rotate == self.op:
+      m = Transform3D.rotation_matrix(**self.kwargs)
+    elif Operation3D.scale == self.op:
+      m = Transform3D.scaling_matrix(**self.kwargs)
+    elif Operation3D.shear == self.op:
+      m = Transform3D.shearing_matrix(**self.kwargs)
+    elif Operation3D.translate == self.op:
+      m = Transform3D.translation_matrix(**self.kwargs)
+    elif Operation3D.reflect == self.op:
+      m = Transform3D.reflection_matrix(**self.kwargs)
+    return m
+    
+  def to_reverse_mtx(self):
+    kwargs = self.kwargs.copy()
+    if Operation3D.rotate == self.op:
+      kwargs['rads'] = -kwargs['rads']
+    elif Operation3D.scale == self.op:
+      kwargs['x'] = 1/kwargs['x']
+      kwargs['y'] = 1/kwargs['y']
+      kwargs['z'] = 1/kwargs['z']
+    elif Operation3D.shear == self.op:
+      kwargs['xy'] = -kwargs['xy']
+      kwargs['xz'] = -kwargs['xz']
+      kwargs['yx'] = -kwargs['yx']
+      kwargs['yz'] = -kwargs['yz']
+      kwargs['zx'] = -kwargs['zx']
+      kwargs['zy'] = -kwargs['zy']
+    elif Operation3D.translate == self.op:
+      kwargs['dx'] = -kwargs['dx']
+      kwargs['dy'] = -kwargs['dy']
+      kwargs['dz'] = -kwargs['dz']
+    elif Operation3D.reflect == self.op:
+      pass  # reflection is the same
+    return _Step(self.op, **kwargs).to_mtx()
 
 
 class Transform3DBuilder(object):
@@ -217,7 +279,9 @@ class Transform3DBuilder(object):
     Composites multiple transformations into a single transformation matrix for efficiency of computation.
     Can produce the actual finished matrix, or apply the matrix to a given 3D point.
     """
-    self._mtx = Matrix.identity_matrix(4)
+    self._steps = []
+    self._mtx = None
+    self._rmtx = None
 
   def rotate(self, axis, rads: SupportsFloat = 0) -> "Transform3DBuilder":
     """
@@ -226,7 +290,7 @@ class Transform3DBuilder(object):
     :param rads: the amount to rotate (in radians). Default: 0.
     :return: self, for method chaining.
     """
-    self._mtx = Transform3D.rotation_matrix(axis, rads) * self._mtx
+    self._steps.append(_Step(Operation3D.rotate, axis=axis, rads=rads))
     return self
 
   def scale(self, x: Number = 1, y: Number = 1, z: Number = 1) -> "Transform3DBuilder":
@@ -237,7 +301,7 @@ class Transform3DBuilder(object):
     :param z: amount to scale in the z direction. Default: 1.
     :return: self, for method chaining.
     """
-    self._mtx = Transform3D.scaling_matrix(x, y, z) * self._mtx
+    self._steps.append(_Step(Operation3D.scale, x=x, y=y, z=z))
     return self
 
   def shear(self,
@@ -254,7 +318,7 @@ class Transform3DBuilder(object):
     :param zy: The amount to shear the z points in the y direction. Default: 0.
     :return: self, for method chaining
     """
-    self._mtx = Transform3D.shearing_matrix(xy, xz, yx, yz, zx, zy) * self._mtx
+    self._steps.append(_Step(Operation3D.shear, xy=xy, xz=xz, yx=yx, yz=yz, zx=zx, zy=zy))
     return self
 
   def translate(self, dx: Number = 0, dy: Number = 0, dz: Number = 0) -> "Transform3DBuilder":
@@ -265,7 +329,7 @@ class Transform3DBuilder(object):
     :param dz: Amount to translate in the z direction. Default: 0.
     :return: self, for method chaining
     """
-    self._mtx = Transform3D.translation_matrix(dx, dy, dz) * self._mtx
+    self._steps.append(_Step(Operation3D.translate, dx=dx, dy=dy, dz=dz))
     return self
 
   def reflect(self, plane) -> "Transform3DBuilder":
@@ -274,19 +338,36 @@ class Transform3DBuilder(object):
     :param plane: the plane over which a point should be reflected
     :return: self, for method chaining
     """
-    self._mtx = Transform3D.reflection_matrix(plane) * self._mtx
+    self._steps.append(_Step(Operation3D.reflect, plane=plane))
     return self
 
   def build(self) -> "Matrix":
     """
     :return: the compiled transformation matrix
     """
+    self._mtx = Matrix.identity_matrix(4)
+    for step in self._steps:
+      self._mtx = step.to_mtx() * self._mtx
     return self._mtx.clone()
+    
+  def build_reverse(self) -> "Matrix":
+    self._rmtx = Matrix.identity_matrix(4)
+    for step in self._steps[::-1]:
+      self._rmtx = step.to_reverse_mtx() * self._rmtx
+    return self._rmtx.clone()
 
   def apply(self, pt: "Point3D") -> "Point3D":
     """
     :param pt: the point to which the transformation should be applied
     :return: the point after transformation
     """
+    if self._mtx is None:
+      raise Exception('Matrix not built yet')
     pmx = Matrix.from_point_with_padding(pt)
     return Point3D(*(self._mtx * pmx).as_list()[:3])
+    
+  def apply_reverse(self, pt: "Point3D") -> "Point3D":
+    if self._rmtx is None:
+      raise Exception('Reverse matrix not built yet')
+    pmx = Matrix.from_point_with_padding(pt)
+    return Point3D(*(self._rmtx * pmx).as_list()[:3])
