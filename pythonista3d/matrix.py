@@ -18,6 +18,12 @@ class Matrix (object):
     self._ncols = ncols
     # The matrix numbers are stored in a 2D list.
     self._data = [init_val for _ in range(self._ncols * self._nrows)]
+
+    # TODO: Implement a means by which to attempt to handle floating point precision without sacrificing speed
+    # The number of decimals of precision to round the cell values to. This is an attempt to help with floating point
+    #   precision errors
+    # self._point_precision = 10
+
     if data is not None:
       self.set_all(data)
 
@@ -34,7 +40,7 @@ class Matrix (object):
       for col in range(self._ncols):
         val = self.get_sub_matrix(row, col).get_determinant()
         # step 2. Apply the checkerboard of alternating signs to the matrix values
-        val * ((-1) ** (row + col))
+        val *= ((-1) ** (row + col))
         new_mtx.set(row, col, val)
     # step 3. Transpose the matrix
     new_mtx = new_mtx.transpose()
@@ -171,6 +177,10 @@ class Matrix (object):
     """
     if rowidx not in range(0, self._nrows) or colidx not in range(0, self._ncols):
       raise MatrixIndexOutOfBoundsError("Given matrix coordinate [(%s, %s)] is out of bounds of the matrix of dimension [%s]." % (rowidx, colidx, self.dimensions))
+    # TODO: floating precision (see todo in constructor)
+    # v = round(value, self._point_precision)
+    # if v == -0.0:
+    #   v = 0.0
     self._data[rowidx * self._ncols + colidx] = value
     
   def set_all(self, data: List[Number]):

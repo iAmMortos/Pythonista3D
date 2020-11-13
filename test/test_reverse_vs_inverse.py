@@ -28,11 +28,21 @@ def main():
   pt3 = builder.apply_reverse(pt2)
   print(pt3)
 
+  print("Forward Matrix")
+  print(builder.build())
+
+  print("Forward Matrix Inversed")
+  print(builder.build().inverse())
+
+  print("Reverse Matrix")
+  print(builder.build_reverse())
+
   m1 = Matrix(4, 4, [2, 5, 0, 8, 1, 4, 2, 6, 7, 8, 9, 3, 1, 5, 7, 8])
 
   print(m1)
   print(m1.inverse())
-  print(m1 * m1.inverse())
+  m2 = m1 * m1.inverse()
+  print(m2)
 
 
 if __name__ == '__main__':
