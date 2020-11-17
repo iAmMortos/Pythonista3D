@@ -1,14 +1,47 @@
+import platform
+import configparser
+import importlib
+import inspect
+
+
+APP_INI_LOCATION = 'pythonista3d/config/app.ini'
+
 
 class GraphicsFactory(object):
   """
   Produces a graphics delegate object based on the platform on which the code is running.
   This is determined by the defaults for those platforms in a properties file.
   """
+  
+  @staticmethod
+  def _make_graphics_inst(gconfig, system):
+    if system == 'iOS':
+      smod = gconfig['DefaultModulePythonista']
+    elif system == 'Windows':
+      smod = gconfig['DefaultModuleDesktop']
+    else:
+      raise Exception('Platform not supported: [%s]' % system)
+    lib = importlib.import_module(smod)
+    
+    # inspect imported module for defined classes
+    classes = [m[0] for m in inspect.getmembers(lib, inspect.isclass) if m[1].__module__ == smod]
+    if len(classes) != 1:
+      raise Exception('A graphics delegate module should contain one, and only one, delegate class definition.')
+      
+    # get class object and return a fresh instance
+    cls = getattr(lib, classes[0])
+    return cls()
 
   @staticmethod
-  def get_graphics():
+  def get_delegate():
     # determine platform
-    # load contents of graphics.properties
-    # create instance of Graphics class from named module
-    # return instance
-    pass
+    if platform.system() == 'Darwin':  #iOS
+      system = 'iOS'
+    elif platform.system() == 'Windows':
+      system = 'Windows'
+    
+    config = configparser.ConfigParser()
+    config.read(APP_INI_LOCATION)
+    graphics_config = config['graphics']
+    return GraphicsFactory._make_graphics_inst(graphics_config, system)
+

@@ -1,5 +1,5 @@
 import test_context
-import pythonista3d.graphics
+from pythonista3d.graphics.graphics_factory import GraphicsFactory
 
-
+d = GraphicsFactory.get_delegate()
 pass
