@@ -1,4 +1,3 @@
-from pythonista3d.graphics.graphics_pythonista import Graphics
 
-
-
+class GraphicsDelegate (object):
+  pass
