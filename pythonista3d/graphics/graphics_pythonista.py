@@ -3,4 +3,5 @@ from pythonista3d.graphics.graphics_delegate import GraphicsDelegate
 
 
 class GraphicsPythonista (GraphicsDelegate):
-  pass
+  def __init__(self):
+    pass
