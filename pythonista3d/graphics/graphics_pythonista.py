@@ -8,3 +8,6 @@ class GraphicsPythonista (GraphicsDelegate):
     
   def draw_triangle(self, p1, p2, p3, color):
     pass
+
+  def show(self):
+    pass
