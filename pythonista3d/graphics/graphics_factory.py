@@ -3,6 +3,8 @@ import configparser
 import importlib
 import inspect
 
+from pythonista3d.graphics.graphics_delegate import GraphicsDelegate
+
 
 APP_INI_LOCATION = 'pythonista3d/config/app.ini'
 
@@ -33,7 +35,7 @@ class GraphicsFactory(object):
     return cls()
 
   @staticmethod
-  def get_delegate():
+  def get_delegate() -> "GraphicsDelegate":
     # determine platform
     if platform.system() == 'Darwin':  #iOS
       system = 'iOS'
