@@ -37,13 +37,13 @@ class STLFacet(object):
 
 
 class STLFile(object):
-  def __init__(self, path: str):
+  def __init__(self, path: str, mode: 'STLMode'):
     """
     Represents an STL file and the data within.
     :param path: the path to the STL file.
     """
     self._path = path
-    self._mode = None
+    self._mode = mode
     self._cur_line = 1
     self._cur_facet = None
     self._facets = []
@@ -64,8 +64,13 @@ class STLFile(object):
           # increment reader
           ln = f.readline()
           self._cur_line += 1
-    if STLMode.binary == self._mode:
+    elif STLMode.binary == self._mode:
       raise Exception("Not implemented yet")
+    else:
+      raise Exception('No mode specified')
+      
+  def get_facets(self):
+    return self._facets
 
   def _process(self, line):
     """

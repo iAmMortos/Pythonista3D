@@ -5,7 +5,7 @@ class Camera(object):
   """
   def __init__(self, pos, look_dir, up_dir, n_dist, f_dist, fov):
     """
-    :param pos: The 3D position of the cameraj
+    :param pos: The 3D position of the camera
     :param look_dir: The unit vector representing the direction the camera is looking
     :param up_dir: The unit vector representing the UP vector for the camera. Is normal to the camera's look vector.
     :param n_dist: The distance from the camera position to the near clipping plane
