@@ -4,6 +4,7 @@ from pythonista3d.points import Point2D, Point3D
 from pythonista3d.fileformats.stl_file import STLFile, STLMode
 from pythonista3d.scene3d import Scene3D
 from pythonista3d.camera import Camera
+from pythonista3d.transform3d import Transform3DBuilder
 
 
 d = GraphicsFactory.get_delegate()
@@ -21,5 +22,8 @@ cam = Camera(
   f_dist=5,
   fov=75)
 scn.set_camera(cam)
+
+tb = Transform3DBuilder()
+tb.translate(-cam.pos.x, -cam.pos.y, -cam.pos.z)
 
 d.draw_triangle(Point2D(100, 100), Point2D(300, 100), Point2D(100, 200), (1,1,1,0), '#fff')

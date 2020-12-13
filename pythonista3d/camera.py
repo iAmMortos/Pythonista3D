@@ -1,9 +1,13 @@
 
+from pythonista3d.points import Point3D
+from pythonista3d.vectors import Vector3D
+from numbers import Number
+
 class Camera(object):
   """
   Represents a perspective camera in 3D space
   """
-  def __init__(self, pos, look_dir, up_dir, n_dist, f_dist, fov):
+  def __init__(self, pos: "Point3D", look_dir: "Vector3D", up_dir: "Vector3D", n_dist: "Number", f_dist: "Number", fov: "Number"):
     """
     :param pos: The 3D position of the camera
     :param look_dir: The unit vector representing the direction the camera is looking
@@ -35,4 +39,7 @@ class Camera(object):
   def look_dir(self, look_dir):
     self._look_dir = look_dir
 
+  @property
+  def w(self):
+    pass
   # TODO: finish accessors
