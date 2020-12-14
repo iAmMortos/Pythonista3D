@@ -11,3 +11,6 @@ class GraphicsDesktop(GraphicsDelegate):
 
   def show(self):
     pass
+
+  def clear(self):
+    pass
