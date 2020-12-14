@@ -44,6 +44,7 @@ class Operation3D (Enum):
   shear = 2
   translate = 3
   reflect = 4
+  custom = 5
 
 
 class Transform3D(object):
@@ -220,6 +221,11 @@ class Transform3D(object):
     pmx = Matrix.from_point_with_padding(pt)
     tmx = Transform3D.reflection_matrix(plane)
     return Point3D(*(tmx * pmx).as_list()[:3])
+
+  @staticmethod
+  def apply_custom_matrix(pt: "Point3D", mtx: "Matrix") -> "Point3D":
+    pmx = Matrix.from_point_with_padding(pt)
+    return Point3D(*(mtx * pmx).as_list()[:3])
     
     
 class _Step(object):
@@ -250,34 +256,10 @@ class _Step(object):
       m = Transform3D.translation_matrix(**self.kwargs)
     elif Operation3D.reflect == self.op:
       m = Transform3D.reflection_matrix(**self.kwargs)
+    elif Operation3D.custom == self.op:
+      m = self.kwargs['mtx']
     return m
     
-  def to_reverse_mtx(self) -> "Matrix":
-    """
-    :return: The transformation matrix that would REVERSE the opepration represented by this transformation step object.
-    """
-    kwargs = self.kwargs.copy()
-    if Operation3D.rotate == self.op:
-      kwargs['rads'] = -kwargs['rads']
-    elif Operation3D.scale == self.op:
-      kwargs['x'] = 1/kwargs['x']
-      kwargs['y'] = 1/kwargs['y']
-      kwargs['z'] = 1/kwargs['z']
-    elif Operation3D.shear == self.op:
-      kwargs['xy'] = -kwargs['xy']
-      kwargs['xz'] = -kwargs['xz']
-      kwargs['yx'] = -kwargs['yx']
-      kwargs['yz'] = -kwargs['yz']
-      kwargs['zx'] = -kwargs['zx']
-      kwargs['zy'] = -kwargs['zy']
-    elif Operation3D.translate == self.op:
-      kwargs['dx'] = -kwargs['dx']
-      kwargs['dy'] = -kwargs['dy']
-      kwargs['dz'] = -kwargs['dz']
-    elif Operation3D.reflect == self.op:
-      pass  # reflection is the same
-    return _Step(self.op, **kwargs).to_mtx()
-
 
 class Transform3DBuilder(object):
   def __init__(self):
@@ -287,7 +269,6 @@ class Transform3DBuilder(object):
     """
     self._steps = []
     self._mtx = None
-    self._rmtx = None
 
   def rotate(self, axis, rads: SupportsFloat = 0) -> "Transform3DBuilder":
     """
@@ -347,6 +328,10 @@ class Transform3DBuilder(object):
     self._steps.append(_Step(Operation3D.reflect, plane=plane))
     return self
 
+  def custom(self, mtx):
+    self._steps.append(_Step(Operation3D.custom, mtx=mtx))
+    return self
+
   def build(self) -> "Matrix":
     """
     :return: the compiled transformation matrix
@@ -355,15 +340,6 @@ class Transform3DBuilder(object):
     for step in self._steps:
       self._mtx = step.to_mtx() * self._mtx
     return self._mtx.clone()
-    
-  def build_reverse(self) -> "Matrix":
-    """
-    :return: the compiled REVERSE transformation matrix (should effectively cancel the `build` matrix)
-    """
-    self._rmtx = Matrix.identity_matrix(4)
-    for step in self._steps[::-1]:
-      self._rmtx = step.to_reverse_mtx() * self._rmtx
-    return self._rmtx.clone()
 
   def apply(self, pt: "Point3D") -> "Point3D":
     """
@@ -374,13 +350,6 @@ class Transform3DBuilder(object):
       raise Exception('Matrix not built yet')
     pmx = Matrix.from_point_with_padding(pt)
     return Point3D(*(self._mtx * pmx).as_list()[:3])
-    
-  def apply_reverse(self, pt: "Point3D") -> "Point3D":
-    """
-    :param pt: the point to which the REVERSE transformation should be applied
-    :return: the point after the REVERSE transformation
-    """
-    if self._rmtx is None:
-      raise Exception('Reverse matrix not built yet')
-    pmx = Matrix.from_point_with_padding(pt)
-    return Point3D(*(self._rmtx * pmx).as_list()[:3])
+
+  def add(self, builder: "Transform3DBuilder"):
+    self._steps += builder._steps

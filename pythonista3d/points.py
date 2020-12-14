@@ -4,16 +4,13 @@ from numbers import Number
 
 
 class Point(object):
-  def __init__(self, ndims: int, *vals: Number):
+  def __init__(self, *vals: Number):
     """
     Represents a point in n-dimension
-    :param ndims: the number of dimensions
     :param vals: the n values for this point (must match ndims)
     """
-    self._num_dimensions = ndims
     self._vals = list(vals[::])
-    if len(vals) != ndims:
-      raise ValueError("The number of values provided must match the `ndims` provided.")
+    self._num_dimensions = len(vals)
 
   def __len__(self):
     return self._num_dimensions
@@ -59,7 +56,7 @@ class Point2D(Point):
     :param x:
     :param y:
     """
-    super().__init__(2, x, y)
+    super().__init__(x, y)
 
   @property
   def x(self) -> Number:
@@ -89,7 +86,7 @@ class Point3D(Point):
     :param y:
     :param z:
     """
-    super().__init__(3, x, y, z)
+    super().__init__(x, y, z)
 
   @property
   def x(self) -> Number:

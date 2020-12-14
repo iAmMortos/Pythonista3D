@@ -6,13 +6,12 @@ from typing import Union
 
 
 class Vector(Point):
-  def __init__(self, ndims: int, *vals: Number):
+  def __init__(self, *vals: Number):
     """
     Represents an n-dimensional vector
-    :param ndims: the number of dimensions
     :param vals: the values in the vector
     """
-    super().__init__(ndims, *vals)
+    super().__init__(*vals)
 
   def add(self, vec: "Vector") -> "Vector":
     """
@@ -22,7 +21,7 @@ class Vector(Point):
     if self.num_dimensions != vec.num_dimensions:
       raise VectorSizeMismatchError("Vertices must be the same dimensions to add. [%s] and [%s] provided." %
                                     (self.num_dimensions, vec.num_dimensions))
-    return Vector(self.num_dimensions, *[self[i] + vec[i] for i in range(self.num_dimensions)])
+    return self.__class__(*[self[i] + vec[i] for i in range(self.num_dimensions)])
 
   def subtract(self, vec: "Vector") -> "Vector":
     """
@@ -32,21 +31,39 @@ class Vector(Point):
     if self.num_dimensions != vec.num_dimensions:
       raise VectorSizeMismatchError("Vertices must be the same dimensions to subtract. [%s] and [%s] provided." %
                                     (self.num_dimensions, vec.num_dimensions))
-    return Vector(self.num_dimensions, *[self[i] - vec[i] for i in range(self.num_dimensions)])
+    return self.__class__(*[self[i] - vec[i] for i in range(self.num_dimensions)])
 
   def add_const(self, const: Number):
     """
     :param const: the constant value to add to each element of the vector
     :return: A new vector with each value increased by the given const.
     """
-    return Vector(self.num_dimensions, *[self[i] + const for i in range(self.num_dimensions)])
+    return self.__class__(*[self[i] + const for i in range(self.num_dimensions)])
+
+  def add_to_point(self, pt: "Point") -> "Point":
+    """
+    :param pt:
+    :return:
+    """
+    if self.num_dimensions != pt.num_dimensions:
+      raise VectorSizeMismatchError("The dimension size of the point and the vector being added must match. Point size: [%s], Vector size: [%s]" % pt.num_dimensions, self.num_dimensions)
+    return pt.__class__(*[pt._vals[i] + self._vals[i] for i in range(self.num_dimensions)])
 
   def subtract_const(self, const: Number):
     """
     :param const: the constant value to subtract from each element of the vector
     :return: A new vector with each value subtracted by the given const.
     """
-    return Vector(self.num_dimensions, *[self[i] - const for i in range(self.num_dimensions)])
+    return self.__class__(*[self[i] - const for i in range(self.num_dimensions)])
+
+  def subtract_from_point(self, pt: "Point") -> "Point":
+    """
+    :param pt:
+    :return:
+    """
+    if self.num_dimensions != pt.num_dimensions:
+      raise VectorSizeMismatchError("The dimension size of the point and the vector being added must match. Point size: [%s], Vector size: [%s]" % pt.num_dimensions, self.num_dimensions)
+    return pt.__class__(*[pt._vals[i] - self._vals[i] for i in range(self.num_dimensions)])
 
   def scale(self, scalar: Number) -> "Vector":
     """
@@ -54,7 +71,7 @@ class Vector(Point):
     :param scalar: The value by which to scale the vector.
     :return: A new vector containing the scaled result.
     """
-    return Vector(self.num_dimensions, *[self[i] * scalar for i in range(self.num_dimensions)])
+    return self.__class__(*[self[i] * scalar for i in range(self.num_dimensions)])
 
   def normalize(self) -> "Vector":
     """
@@ -62,7 +79,7 @@ class Vector(Point):
     :return: A new vector containing the unit version of this vector.
     """
     m = self.get_magnitude()
-    return Vector(self.num_dimensions, *[n / m for n in self._vals])
+    return self.__class__(*[n / m for n in self._vals])
 
   def get_magnitude(self):
     """
@@ -83,22 +100,26 @@ class Vector(Point):
                                     (self._num_dimensions, vec._num_dimensions))
     return sum([z[0] * z[1] for z in zip(self._vals, vec._vals)])
 
-  def __add__(self, other: Union["Vector", Number]) -> "Vector":
+  def __add__(self, other: Union["Vector", "Point", Number]) -> Union["Vector", "Point"]:
     if isinstance(other, Vector):
       return self.add(other)
     elif isinstance(other, Number):
       return self.add_const(other)
+    elif isinstance(other, Point):
+      return self.add_to_point(other)
     else:
       raise TypeError("Cannot add type [%s] to a vector." % type(other))
 
   def __radd__(self, other: Number) -> "Vector":
     return self.__add__(other)
 
-  def __sub__(self, other: Union["Vector", Number]) -> "Vector":
+  def __sub__(self, other: Union["Vector", "Point", Number]) -> Union["Vector", "Point"]:
     if isinstance(other, Vector):
       return self.subtract(other)
     elif isinstance(other, Number):
       return self.subtract_const(other)
+    elif isinstance(other, Point):
+      return self.subtract_from_point(other)
     else:
       raise TypeError("Cannot subtract type [%s] from a vector." % type(other))
 
@@ -113,6 +134,11 @@ class Vector(Point):
   def __rmul__(self, other: Number) -> "Vector":
     return self.__mul__(other)
 
+  def __neg__(self) -> "Vector":
+    return self.__class__(*[-v for v in self._vals])
+
+  def __truediv__(self, other):
+    return self.scale(1 / other)
 
 class Vector2D(Vector):
   def __init__(self, x: Number = 0, y: Number = 0):
@@ -121,7 +147,7 @@ class Vector2D(Vector):
     :param x:
     :param y:
     """
-    super().__init__(2, x, y)
+    super().__init__(x, y)
 
   def cross(self) -> "Vector2D":
     """
@@ -154,7 +180,7 @@ class Vector3D(Vector):
     :param y:
     :param z:
     """
-    super().__init__(3, x, y, z)
+    super().__init__(x, y, z)
 
   def cross(self, vec: "Vector3D") -> "Vector3D":
     """
