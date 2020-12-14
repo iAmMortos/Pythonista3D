@@ -127,10 +127,6 @@ class Camera(object):
       .scale(1 / (self._far_plane_dist * math.tan(self._hor_rads / 2)),
              1 / (self._far_plane_dist * math.tan(self._vert_rads / 2)),
              1 / self._far_plane_dist)\
-      .custom(Matrix(4, 4, [1, 0, 0, 0,
-                            0, 1, 0, 0,
-                            0, 0, 1/(k-1), k/(k-1),
-                            0, 0, -1, 0]))\
       .build()
     return tb
 

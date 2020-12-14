@@ -99,6 +99,13 @@ class Vector(Point):
                                     "Vectors of length [%s] and [%s] provided." %
                                     (self._num_dimensions, vec._num_dimensions))
     return sum([z[0] * z[1] for z in zip(self._vals, vec._vals)])
+    
+  def as_point(self):
+    return Point(*self._vals)
+    
+  @staticmethod
+  def from_point(pt):
+    return Vector(*pt.as_list())
 
   def __add__(self, other: Union["Vector", "Point", Number]) -> Union["Vector", "Point"]:
     if isinstance(other, Vector):
@@ -214,3 +221,15 @@ class Vector3D(Vector):
   @z.setter
   def z(self, val: Number):
     self[2] = val
+    
+  @staticmethod
+  def from_normal_points(p1, p2, p3):
+    v1 = Vector3D.between_points(p2, p1)
+    v2 = Vector3D.between_points(p2, p3)
+    return v1.cross(v2)
+    
+  @staticmethod
+  def between_points(p1, p2):
+    if len(p1) != len(p2):
+      raise VectorSizeMismatchError('The given points must match dimensions size.')
+    return Vector3D(*[p2[i] - p1[i] for i in range(len(p1))])

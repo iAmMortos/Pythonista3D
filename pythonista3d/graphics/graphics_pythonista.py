@@ -15,3 +15,6 @@ class GraphicsPythonista (GraphicsDelegate):
 
   def show(self):
     run(self.scene, show_fps=False)
+  
+  def clear(self):
+    self.scene.clear_triangles()
