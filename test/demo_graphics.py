@@ -12,7 +12,7 @@ from pythonista3d.matrix import Matrix
 d = GraphicsFactory.get_delegate()
 d.show()
 
-file = STLFile("rsc/monkey_ascii.stl", STLMode.ascii)
+file = STLFile("rsc/teapot_ascii.stl", STLMode.ascii)
 file.load()
 
 scn = Scene3D()
