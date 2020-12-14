@@ -1,6 +1,7 @@
 import os
 from enum import Enum
 from pythonista3d.points import Point3D
+from pythonista3d.vectors import Vector3D
 
 
 class STLMode(Enum):
@@ -22,7 +23,7 @@ class STLFacet(object):
     Assumes file is valid; does not perform file validation!
     :param normalstr: The string line from the STL file that contains the normal data to be parsed.
     """
-    self.normal = Point3D(*[float(n) for n in normalstr.split()[-3:]])
+    self.normal = Vector3D(*[float(n) for n in normalstr.split()[-3:]])
     self.vs = []
 
   def add_vertex(self, vstr):

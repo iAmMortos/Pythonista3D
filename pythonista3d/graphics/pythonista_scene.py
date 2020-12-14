@@ -34,6 +34,8 @@ class PythonistaScene(Scene):
     pass
     
   def clear_triangles(self):
+    for n in self.nodes:
+      n.remove_from_parent()
     self.nodes = []
     
   @staticmethod

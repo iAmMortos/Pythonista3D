@@ -99,6 +99,13 @@ class Vector(Point):
                                     "Vectors of length [%s] and [%s] provided." %
                                     (self._num_dimensions, vec._num_dimensions))
     return sum([z[0] * z[1] for z in zip(self._vals, vec._vals)])
+    
+  def as_point(self):
+    return Point(*self._vals)
+    
+  @staticmethod
+  def from_point(pt):
+    return Vector(*pt.as_list())
 
   def __add__(self, other: Union["Vector", "Point", Number]) -> Union["Vector", "Point"]:
     if isinstance(other, Vector):

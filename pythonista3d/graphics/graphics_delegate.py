@@ -10,3 +10,7 @@ class GraphicsDelegate (ABC):
   @abstractmethod
   def show(self):
     pass
+    
+  @abstractmethod
+  def clear(self):
+    pass
