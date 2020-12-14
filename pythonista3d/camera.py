@@ -115,6 +115,9 @@ class Camera(object):
     self._u = self._calc_u()
 
   def get_std_view_volume_transformation(self):
+    f = self._far_plane_dist
+    n = self._near_plane_dist
+    k = n / f
     tb = Transform3DBuilder()
     tb.translate(-self.pos.x, -self.pos.y, -self.pos.z)\
       .custom(Matrix(4, 4, [self.u.x, self.u.y, self.u.z, 0,
@@ -124,19 +127,22 @@ class Camera(object):
       .scale(1 / (self._far_plane_dist * math.tan(self._hor_rads / 2)),
              1 / (self._far_plane_dist * math.tan(self._vert_rads / 2)),
              1 / self._far_plane_dist)\
+      .custom(Matrix(4, 4, [1, 0, 0, 0,
+                            0, 1, 0, 0,
+                            0, 0, 1/(k-1), k/(k-1),
+                            0, 0, -1, 0]))\
       .build()
     return tb
 
   def get_unhinging_transformation(self):
     f = self._far_plane_dist
     n = self._near_plane_dist
-    fn = f - n
-    c = -n / f
+    k = n / f
     tb = Transform3DBuilder()
-    tb.custom(Matrix(4, 4, [fn,  0,   0, 0,
-                            0,  fn,   0, 0,
-                            0,   0,   f, n,
-                            0,   0, -fn, 0]))
+    tb.custom(Matrix(4, 4, [1, 0, 0, 0,
+                            0, 1, 0, 0,
+                            0, 0, 1/(k-1), k/(k-1),
+                            0, 0, -1, 0]))
     tb.build()
     return tb
 

@@ -349,7 +349,10 @@ class Transform3DBuilder(object):
     if self._mtx is None:
       raise Exception('Matrix not built yet')
     pmx = Matrix.from_point_with_padding(pt)
-    return Point3D(*(self._mtx * pmx).as_list()[:3])
+    x, y, z, w = (self._mtx * pmx).as_list()
+
+    # homogenize before returning point
+    return Point3D(x/w, y/w, z/w)
 
   def add(self, builder: "Transform3DBuilder"):
     self._steps += builder._steps

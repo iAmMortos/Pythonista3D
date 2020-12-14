@@ -17,29 +17,30 @@ file.load()
 
 scn = Scene3D()
 cam = Camera(
-  pos=Point3D(0, 0, 2),
+  pos=Point3D(0, 0, 4),
   look_dir=Vector3D(0, 0, -1),
   up_dir=Vector3D(0, 1, 0),
   n_dist=0.01,
-  f_dist=5,
+  f_dist=10,
   fov=75)
 scn.set_camera(cam)
 
-# print("A:", cam.A)
-# print("B:", cam.B)
-# print("C:", cam.C)
+print("A:", cam.A)
+print("B:", cam.B)
+print("C:", cam.C)
 
 tb = cam.get_std_view_volume_transformation()
 # tb = cam.get_unhinging_transformation()
-# tb.build()
+m = tb.build()
+print(m)
 
-# print("Standardized:")
-# print("A:", tb.apply(cam.A))
-# print("B:", tb.apply(cam.B))
-# print("C:", tb.apply(cam.C))
+print("Standardized:")
+print("A:", tb.apply(cam.A))
+print("B:", tb.apply(cam.B))
+print("C:", tb.apply(cam.C))
 for ft in file.get_facets():
+  vs = []
   for p in ft.vs:
     p2 = tb.apply(p)
-    print('[%s] -> [%s]' % (p, p2))
-
-# d.draw_triangle(Point2D(100, 100), Point2D(300, 100), Point2D(100, 200), (1,1,1,0), '#fff', 1)
+    vs += [Point2D((p2.x + 1) / 2 * 736, (p2.y + 1) / 2 * 414)]
+  d.draw_triangle(vs[0], vs[1], vs[2], (1,1,1,0), '#fff', 1)
