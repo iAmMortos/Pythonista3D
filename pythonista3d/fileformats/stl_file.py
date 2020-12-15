@@ -2,6 +2,7 @@ import os
 from enum import Enum
 from pythonista3d.points import Point3D
 from pythonista3d.vectors import Vector3D
+from typing import List
 
 
 class STLMode(Enum):
@@ -20,13 +21,12 @@ class STLFacet(object):
     """
     Represents a single facet (made of three points and a normal vector) from the STL file.
     Initialize the facet with the normal, then add the points as they are parsed from the file.
-    Assumes file is valid; does not perform file validation!
     :param normalstr: The string line from the STL file that contains the normal data to be parsed.
     """
     self.normal = Vector3D(*[float(n) for n in normalstr.split()[-3:]])
     self.vs = []
 
-  def add_vertex(self, vstr):
+  def add_vertex(self, vstr: str):
     """
     Add a vertex to the facet object
     :param vstr: the string containing the data from a vertex to be parsed and added to the facet object.
@@ -41,6 +41,7 @@ class STLFile(object):
   def __init__(self, path: str, mode: 'STLMode'):
     """
     Represents an STL file and the data within.
+    Assumes file is valid; does not perform file validation!
     :param path: the path to the STL file.
     """
     self._path = path
@@ -70,14 +71,16 @@ class STLFile(object):
     else:
       raise Exception('No mode specified')
       
-  def get_facets(self):
+  def get_facets(self) -> List["STLFacet"]:
+    """
+    :return: the facets parsed from the file
+    """
     return self._facets
 
-  def _process(self, line):
+  def _process(self, line: str):
     """
     Parses a single line of the STL file in ascii mode and update this object's
     :param line: A single line of ascii text to parse
-    :return:
     """
     if self._cur_line == 1:
       self._mode = STLMode.ascii if line.startswith("solid") else STLMode.binary

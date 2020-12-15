@@ -2,6 +2,8 @@
 from typing import List
 from numbers import Number
 
+# TODO: document fully
+
 
 class Point(object):
   def __init__(self, *vals: Number):

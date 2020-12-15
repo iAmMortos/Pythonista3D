@@ -1,5 +1,7 @@
 from pythonista3d.camera import Camera
 
+# TODO: document and make API for easier use than demo test file
+
 
 class Scene3D(object):
   def __init__(self):
