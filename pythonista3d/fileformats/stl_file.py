@@ -1,7 +1,9 @@
 import os
 from enum import Enum
+from pythonista3d.fileformats.model_retriever import ModelReceiver
 from pythonista3d.points import Point3D
 from pythonista3d.vectors import Vector3D
+from pythonista3d.facet import Facet
 from typing import List
 
 
@@ -16,7 +18,7 @@ class STLMode(Enum):
   binary = 1
 
 
-class STLFacet(object):
+class STLFacet(Facet):
   def __init__(self, normalstr: str):
     """
     Represents a single facet (made of three points and a normal vector) from the STL file.
@@ -24,20 +26,20 @@ class STLFacet(object):
     :param normalstr: The string line from the STL file that contains the normal data to be parsed.
     """
     self.normal = Vector3D(*[float(n) for n in normalstr.split()[-3:]])
-    self.vs = []
+    self.vertices = []
 
   def add_vertex(self, vstr: str):
     """
     Add a vertex to the facet object
     :param vstr: the string containing the data from a vertex to be parsed and added to the facet object.
     """
-    self.vs.append(Point3D(*[float(n) for n in vstr.split()[-3:]]))
+    self.vertices.append(Point3D(*[float(n) for n in vstr.split()[-3:]]))
 
   def __repr__(self):
-    return "{}\n\t{}\n\t{}\n\t{}".format(self.normal, self.vs[0], self.vs[1], self.vs[2])
+    return "{}\n\t{}\n\t{}\n\t{}".format(self.normal, self.vertices[0], self.vertices[1], self.vertices[2])
 
 
-class STLFile(object):
+class STLFile(ModelReceiver):
   def __init__(self, path: str, mode: 'STLMode'):
     """
     Represents an STL file and the data within.

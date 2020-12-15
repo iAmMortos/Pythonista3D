@@ -7,7 +7,7 @@ def main():
   file.load()
   fs = file.get_facets()
   for f in fs:
-    print(f.vs)
+    print(f.vertices)
     print(f.normal)
 
 
