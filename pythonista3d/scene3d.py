@@ -11,6 +11,7 @@ class Scene3D(object):
     self.meshes = []
     self.camera = camera
     self.gfx_delegate = gfx_delegate
+    self.update_tb = None
     
   def add_mesh(self, mesh: Mesh):
     self.meshes.append(mesh)
@@ -26,6 +27,11 @@ class Scene3D(object):
 
     for mesh in self.meshes:
       self._render_mesh(mesh, tb)
+
+  def _update(self):
+    if self.update_tb is not None:
+      for mesh in self.meshes:
+        mesh.transform(self.update_tb)
 
   def _render_mesh(self, mesh: "Mesh", tb):
     for ft in mesh.facets:
