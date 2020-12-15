@@ -2,6 +2,7 @@ from pythonista3d.camera import Camera
 from pythonista3d.mesh import Mesh
 from pythonista3d.graphics.graphics_delegate import GraphicsDelegate
 from pythonista3d.points import Point2D
+import threading
 
 # TODO: document and make API for easier use than demo test file
 
@@ -19,7 +20,8 @@ class Scene3D(object):
   def show(self):
     self.gfx_delegate.show()
 
-  def render(self):
+  def render(self, interval = None):
+    self.gfx_delegate.clear()
     tb = self.camera.get_std_view_volume_transformation()
     tb.add(self.camera.get_unhinging_transformation())
     tb.build()
@@ -27,6 +29,9 @@ class Scene3D(object):
 
     for mesh in self.meshes:
       self._render_mesh(mesh, tb)
+    if interval is not None:
+      self._update()
+      threading.Timer(interval, self.render, args=[interval]).start()
 
   def _update(self):
     if self.update_tb is not None:

@@ -10,15 +10,15 @@ from pythonista3d.mesh import Mesh
 
 d = GraphicsFactory.get_delegate()
 cam = Camera(
-  pos=Point3D(1, -3, -0.1),
-  look_dir=Vector3D(-1, 3, 0),
+  pos=Point3D(2, -4, 0),
+  look_dir=Vector3D(-2, 4, 0),
   up_dir=Vector3D(0, 0, 1),
   n_dist=0.01,
   f_dist=10,
   fov=75)
 scn = Scene3D(cam, d)
 
-file = STLFile("rsc/sphere_ascii.stl", STLMode.ascii)
+file = STLFile("rsc/cube_ascii.stl", STLMode.ascii)
 file.load()
 obj = Mesh(file)
 

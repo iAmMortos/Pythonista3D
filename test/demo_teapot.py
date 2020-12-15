@@ -10,7 +10,7 @@ from pythonista3d.mesh import Mesh
 
 d = GraphicsFactory.get_delegate()
 cam = Camera(
-  pos=Point3D(0, -5, 0),
+  pos=Point3D(0, -6, 0),
   look_dir=Vector3D(0, 1, 0),
   up_dir=Vector3D(0, 0, 1),
   n_dist=0.01,
