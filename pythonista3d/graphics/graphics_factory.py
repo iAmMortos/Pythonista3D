@@ -5,9 +5,6 @@ import inspect
 
 from pythonista3d.graphics.graphics_delegate import GraphicsDelegate
 
-# TODO: Documentation
-
-
 APP_INI_LOCATION = 'pythonista3d/config/app.ini'
 
 
@@ -19,6 +16,13 @@ class GraphicsFactory(object):
   
   @staticmethod
   def _make_graphics_inst(gconfig, system):
+    """
+    Create an instance of the graphics delegate for the user's system.
+    Appropriate modules are defined in the app.ini then dynamically instantiated
+    :param gconfig: the config file section for graphics
+    :param system: the system the user is on
+    :return: an instance of the appropriate class
+    """
     if system == 'iOS':
       smod = gconfig['DefaultModulePythonista']
     elif system == 'Windows':
@@ -38,7 +42,10 @@ class GraphicsFactory(object):
 
   @staticmethod
   def get_delegate() -> "GraphicsDelegate":
-    # determine platform
+    """
+    Detect the type of system the user is on
+    :return: the appropriate graphics delegate
+    """
     if platform.system() == 'Darwin':  #iOS
       system = 'iOS'
     elif platform.system() == 'Windows':

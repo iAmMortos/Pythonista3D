@@ -1,6 +1,6 @@
 import os
 from enum import Enum
-from pythonista3d.fileformats.model_retriever import ModelReceiver
+from pythonista3d.fileformats.model_retriever import ModelRetriever
 from pythonista3d.points import Point3D
 from pythonista3d.vectors import Vector3D
 from pythonista3d.facet import Facet
@@ -39,7 +39,7 @@ class STLFacet(Facet):
     return "{}\n\t{}\n\t{}\n\t{}".format(self.normal, self.vertices[0], self.vertices[1], self.vertices[2])
 
 
-class STLFile(ModelReceiver):
+class STLFile(ModelRetriever):
   def __init__(self, path: str, mode: 'STLMode'):
     """
     Represents an STL file and the data within.
