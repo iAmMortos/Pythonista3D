@@ -18,7 +18,7 @@ cam = Camera(
   fov=75)
 scn = Scene3D(cam, d)
 
-file = STLFile("rsc/monkey_ascii.stl", STLMode.ascii)
+file = STLFile("rsc/sphere_ascii.stl", STLMode.ascii)
 file.load()
 obj = Mesh(file)
 
