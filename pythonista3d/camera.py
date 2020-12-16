@@ -7,8 +7,6 @@ from pythonista3d.matrix import Matrix
 from numbers import Number
 import math
 
-# TODO: Document
-
 
 class Camera(object):
   """

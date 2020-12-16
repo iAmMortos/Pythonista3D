@@ -5,8 +5,6 @@ import sound
 import random
 import math
 
-# TODO: Document
-
 
 A = Action
 

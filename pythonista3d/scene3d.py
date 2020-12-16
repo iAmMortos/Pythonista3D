@@ -4,8 +4,6 @@ from pythonista3d.graphics.graphics_delegate import GraphicsDelegate
 from pythonista3d.points import Point2D
 import threading
 
-# TODO: document and make API for easier use than demo test file
-
 
 class Scene3D(object):
   def __init__(self, camera: Camera, gfx_delegate: GraphicsDelegate):
